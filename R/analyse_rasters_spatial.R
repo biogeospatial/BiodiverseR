@@ -98,6 +98,13 @@ analyse_rasters_spatial = function(
     processed_results[[list_name]] = df
   }
 
+  # Adds calculations metadata to cache
+  if (exists(rasters_calc, envir=package_cache)) {
+    append(package_cache$rasters_calc, calculations)
+  } else {
+    package_cache$rasters_calc = list(rasters_calculations = calculations)
+  }
+
   return (processed_results)
 }
 

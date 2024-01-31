@@ -99,6 +99,13 @@ run_cluster_analysis = function (
   }
   processed_results[['node_values']] <- df
 
+  # Adds calculations metadata to cache
+  if (exists(cluster_calc, envir=package_cache)) {
+    append(package_cache$cluster_calc, calculations)
+  } else {
+    package_cache$cluster_calc = list(cluster_calculations = calculations)
+  }
+
   return(processed_results)
 }
 
