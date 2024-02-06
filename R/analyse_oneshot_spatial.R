@@ -67,7 +67,7 @@ analyse_oneshot_spatial <- function(
     tree = tree
   )
 
-  # Adds calculations metadata to cache
+  # Checks if calc metadata is in cache, if not we create a new list for it
   if (exists(oneshot_calc, envir=package_cache)) {
     append(package_cache$oneshot_calc, calculations)
   } else {
