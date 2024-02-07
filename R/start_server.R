@@ -1,9 +1,6 @@
 ## Workaround an R CMD check false positive
 dummy_r6 <- function() R6::R6Class
 
-## Package cache for calc metadata
-## Currently stores lists of calculation metadata for each analysis
-package_cache <- new.env()
 
 #' Start the Biodiverse server
 #'

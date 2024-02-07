@@ -99,11 +99,8 @@ run_cluster_analysis = function (
   }
   processed_results[['node_values']] <- df
 
-  # Checks if calc metadata is in cache, if not we create a new list for it
-  if (exists(cluster_calc, envir=package_cache)) {
-    append(package_cache$cluster_calc, calculations)
-  } else {
-    package_cache$cluster_calc = list(cluster_calculations = calculations)
+  if (!is.null(calculations)) {
+    bd$set_calculations_cache(calculations)
   }
 
   return(processed_results)

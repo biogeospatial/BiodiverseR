@@ -56,6 +56,10 @@ run_spatial_analysis = function (
 
   call_results = bd$call_server("bd_run_spatial_analysis", params)
 
+  if (!is.null(calculations)) {
+    bd$set_calculations_cache(calculations)
+  }
+
   processed_results = process_tabular_results(call_results)
 
   return(processed_results)
