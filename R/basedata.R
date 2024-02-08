@@ -189,26 +189,19 @@ basedata = R6::R6Class("basedata",
     get_group_count = function () {
       self$call_server("bd_get_group_count")
     },
+    calcs_are_valid = function () {
+      cache = get_calculations_cache()
+      # TODO: ARG ERROR CHECKING
+    },
     # get_calculations_metadata = function () {
     #   self$call_server("calculations_metadata")
     # },
     get_calculations_cache = function () {
       if (is.null(calculations_cache)) {
-        calculations_cache = new.env()
+        return (calculations_cache)
       }
-      return (self$calculations_cache)
-    },
-    set_calculations_cache = function (new_calculations) {
-      if (is.null(calculations_cache)) {
-        calculations_cache = new.env()
-      }
-
-      # Adds new list of calculations to cache
-      if (exists(calculations, envir=calculations_cache)) {
-        append(calculations_cache$calculations, new_calculations)
-      } else {
-        calculations_cache$calculations = list(new_calculations)
-      }
+      calculations_cache = new.env()
+      return (calculations_cache)
     },
     get_label_count = function () {
       self$call_server("bd_get_label_count")

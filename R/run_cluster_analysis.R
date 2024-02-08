@@ -99,10 +99,6 @@ run_cluster_analysis = function (
   }
   processed_results[['node_values']] <- df
 
-  if (!is.null(calculations)) {
-    bd$set_calculations_cache(calculations)
-  }
-
   return(processed_results)
 }
 
