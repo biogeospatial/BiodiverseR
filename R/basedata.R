@@ -193,14 +193,19 @@ basedata = R6::R6Class("basedata",
       cache = get_calculations_cache()
       # TODO: ARG ERROR CHECKING
     },
-    # get_calculations_metadata = function () {
-    #   self$call_server("calculations_metadata")
-    # },
+    get_indices_metadata = function () {
+      self$call_server("get_calculations_metadata")
+    },
     get_calculations_cache = function () {
       if (is.null(calculations_cache)) {
         return (calculations_cache)
       }
       calculations_cache = new.env()
+      
+      # Get metadata from IndicesMetadata.PM
+      indice_metadata = get_indices_metadata()
+      assign("indice_metadata", indice_metadata, envir=calculations_cache)
+
       return (calculations_cache)
     },
     get_label_count = function () {
