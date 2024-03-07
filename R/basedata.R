@@ -43,7 +43,7 @@ basedata = R6::R6Class("basedata",
       ) {
       self$name = name
 
-      self$calculations_cache
+      self$cache_list
 
       if (filename == '') {
         checkmate::assert_vector(cellsizes, any.missing=FALSE, min.len=1)
@@ -193,20 +193,21 @@ basedata = R6::R6Class("basedata",
       cache = get_calculations_cache()
       # TODO: ARG ERROR CHECKING
     },
-    get_indices_metadata = function () {
-      self$call_server("get_calculations_metadata")
+    get_indices_metadata = function (cacheType) {
+      if (is.null(cache_list[cacheType])) {
+        cache_list[[cacheType]] = new.env()
+        indice_metadata = self$call_server("get_calculations_metadata")
+        assign("indice_metadata", indice_metadata, envir=cache_list[[cacheType]])
+      }
+
+      return (cache_list[cacheType])
     },
     get_calculations_cache = function () {
-      if (is.null(calculations_cache)) {
-        return (calculations_cache)
+      if (is.null(cache_list)) {
+        cache_list = list()
       }
-      calculations_cache = new.env()
-      
-      # Get metadata from IndicesMetadata.PM
-      indice_metadata = get_indices_metadata()
-      assign("indice_metadata", indice_metadata, envir=calculations_cache)
 
-      return (calculations_cache)
+      return (cache_list)
     },
     get_label_count = function () {
       self$call_server("bd_get_label_count")
