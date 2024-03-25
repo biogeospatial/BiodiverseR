@@ -193,14 +193,14 @@ basedata = R6::R6Class("basedata",
       cache = get_calculations_cache()
       # TODO: ARG ERROR CHECKING
     },
-    get_indices_metadata = function (cacheType) {
-      if (is.null(cache_list[cacheType])) {
-        cache_list[[cacheType]] = new.env()
+    get_indices_metadata = function (cache_type) {
+      if (is.null(cache_list[cache_type])) {
+        cache_list[[cache_type]] = new.env()
         indice_metadata = self$call_server("get_calculations_metadata")
-        assign("indice_metadata", indice_metadata, envir=cache_list[[cacheType]])
+        assign("indice_metadata", indice_metadata, envir=cache_list[[cache_type]])
       }
 
-      return (cache_list[cacheType])
+      return (cache_list[cache_type])
     },
     get_calculations_cache = function () {
       if (is.null(cache_list)) {
