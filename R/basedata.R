@@ -190,24 +190,21 @@ basedata = R6::R6Class("basedata",
       self$call_server("bd_get_group_count")
     },
     calcs_are_valid = function () {
-      cache = get_calculations_cache()
+      cache = get_indices_metadata()
       # TODO: ARG ERROR CHECKING
     },
     get_indices_metadata = function (cache_type) {
-      if (is.null(cache_list[cache_type])) {
-        cache_list[[cache_type]] = new.env()
-        indice_metadata = self$call_server("get_calculations_metadata")
-        assign("indice_metadata", indice_metadata, envir=cache_list[[cache_type]])
-      }
-
-      return (cache_list[cache_type])
-    },
-    get_calculations_cache = function () {
       if (is.null(cache_list)) {
         cache_list = list()
       }
 
-      return (cache_list)
+      if (is.null(cache_list[cache_type])) {
+        cache_list[[cache_type]] = new.env()
+        indices_metadata = self$call_server("get_calculations_metadata")
+        assign("indices_metadata", indices_metadata, envir=cache_list[[cache_type]])
+      }
+
+      return (cache_list[cache_type])
     },
     get_label_count = function () {
       self$call_server("bd_get_label_count")
