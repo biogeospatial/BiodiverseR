@@ -34,16 +34,19 @@ basedata = R6::R6Class("basedata",
     server = NULL,
     cellsizes   = NULL,
     cellorigins = NULL,
+    cache_list = NULL,
     initialize = function(
         name = paste("BiodiverseR::basedata", date()),
         cellsizes,
         cellorigins,
         filename = '',
-        port=0, use_exe=FALSE, perl_path=NA
+        port=0, use_exe=FALSE, perl_path=NA,
+        cache_list = list()
       ) {
       self$name = name
 
-      self$cache_list
+      self$cache_list = cache_list
+
 
       if (filename == '') {
         checkmate::assert_vector(cellsizes, any.missing=FALSE, min.len=1)
@@ -194,17 +197,16 @@ basedata = R6::R6Class("basedata",
       # TODO: ARG ERROR CHECKING
     },
     get_indices_metadata = function (cache_type) {
-      if (is.null(cache_list)) {
-        cache_list = list()
-      }
-
-      if (is.null(cache_list[cache_type])) {
-        cache_list[[cache_type]] = new.env()
+      # if (is.null(cache_list)) {
+      #   cache_list = list()
+      # }
+      if (is.null(self$cache_list[[cache_type]])) {
+        self$cache_list[[cache_type]] = new.env()
         indices_metadata = self$call_server("get_calculations_metadata")
-        assign("indices_metadata", indices_metadata, envir=cache_list[[cache_type]])
+        assign("indices_metadata", indices_metadata, envir=self$cache_list[[cache_type]])
       }
 
-      return (cache_list[cache_type])
+      return (self$cache_list[cache_type])
     },
     get_label_count = function () {
       self$call_server("bd_get_label_count")

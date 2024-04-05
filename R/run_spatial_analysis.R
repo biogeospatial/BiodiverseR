@@ -47,13 +47,6 @@ run_spatial_analysis = function (
     tree = tree
   )
 
-  # Checks if calc metadata is in cache, if not we create a new list for it
-  if (exists(spatial_analysis_calc, envir=package_cache)) {
-    append(package_cache$spatial_analysis_calc, calculations)
-  } else {
-    package_cache$spatial_analysis_calc = list(spatial_analysis_calculations = calculations)
-  }
-
   call_results = bd$call_server("bd_run_spatial_analysis", params)
 
   processed_results = process_tabular_results(call_results)
