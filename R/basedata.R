@@ -131,7 +131,9 @@ basedata = R6::R6Class("basedata",
       # call_results <- httr::content(response, "parsed")
 
       req <- httr2::request(target_url)
-      req <- httr2::req_body_raw(req, params_as_json)
+      if (!is.null(params)) {
+        req <- httr2::req_body_raw(req, params_as_json)
+      }
       req <- httr2::req_headers(req, api_key = self$server$server_api_key)
       response <- httr2::req_perform(req)
       call_results <- httr2::resp_body_json(response)
@@ -197,16 +199,15 @@ basedata = R6::R6Class("basedata",
       # TODO: ARG ERROR CHECKING
     },
     get_indices_metadata = function (cache_type) {
-      # if (is.null(cache_list)) {
-      #   cache_list = list()
-      # }
       if (is.null(self$cache_list[[cache_type]])) {
         self$cache_list[[cache_type]] = new.env()
         indices_metadata = self$call_server("calculations_metadata")
         assign("indices_metadata", indices_metadata, envir=self$cache_list[[cache_type]])
       }
 
-      return (self$cache_list[cache_type])
+      # Returns the environment of indices metadata itself
+      # Example access: cache_list[[cache_type]]$indices_metadata
+      return (self$cache_list[[cache_type]])
     },
     get_label_count = function () {
       self$call_server("bd_get_label_count")

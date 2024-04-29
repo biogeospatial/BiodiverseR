@@ -20,7 +20,13 @@ test_that("Test to see if package cache is created after analysis call", {
       spatial_conditions = "sp_self_only()"   
   )
 
-  results = bd$get_indices_metadata("test")
-  # print(bd$cache_list["test"])
-  expect_equal(bd$cache_list, list())
+  cache_type = "test"
+  result = bd$get_indices_metadata(cache_type)
+
+  # Simple checks for correct type and to check if env was properly populated
+  expect_equal(typeof(result), "environment")
+  expect_true(length(result) > 0)
+
+  # Check if the content of the env exists
+  expect_true(!is.null(result$indices_metadata))
 })
