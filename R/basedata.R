@@ -202,7 +202,7 @@ basedata = R6::R6Class("basedata",
       # }
       if (is.null(self$cache_list[[cache_type]])) {
         self$cache_list[[cache_type]] = new.env()
-        indices_metadata = self$call_server("/calculations_metadata")
+        indices_metadata = self$call_server("calculations_metadata")
         assign("indices_metadata", indices_metadata, envir=self$cache_list[[cache_type]])
       }
 
