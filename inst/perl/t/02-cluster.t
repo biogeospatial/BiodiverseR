@@ -27,7 +27,7 @@ my $expected_cluster_indices = {
     result => $cluster_indices,
 };
 
-$t->get_ok('/valid_cluster_indices' => {"api_key" => $api_key})
+$t->post_ok('/valid_cluster_indices' => {"api_key" => $api_key})
     ->status_is(200, "status valid cluster indices")
     ->json_is('' => $expected_cluster_indices, "results valid cluster indices");
 

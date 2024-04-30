@@ -131,9 +131,10 @@ basedata = R6::R6Class("basedata",
       # call_results <- httr::content(response, "parsed")
 
       req <- httr2::request(target_url)
-      if (!is.null(params)) {
-        req <- httr2::req_body_raw(req, params_as_json)
-      }
+      # if (!is.null(params)) {
+       #   req <- httr2::req_body_raw(req, params_as_json)
+      # }
+      req <- httr2::req_body_raw(req, params_as_json)
       req <- httr2::req_headers(req, api_key = self$server$server_api_key)
       response <- httr2::req_perform(req)
       call_results <- httr2::resp_body_json(response)

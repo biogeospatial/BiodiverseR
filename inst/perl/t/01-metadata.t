@@ -9,7 +9,7 @@ my $t = Test::Mojo->new('BiodiverseR');
 $t->get_ok('/api_key');
 my $api_key = $t->tx->res->json;
 # p $api_key;
-$t->get_ok('/calculations_metadata' => {"api_key" => $api_key})->status_is(200);
+$t->post_ok('/calculations_metadata' => {"api_key" => $api_key})->status_is(200);
 
 #  pretty basic
 $t->json_has ('/result/calc_phylo_rpe2/description');
@@ -35,7 +35,7 @@ foreach my $fn (qw/average recalculate average_unweighted minimum maximum/) {
 # }
 
 
-$t->get_ok('/valid_cluster_tie_breaker_indices' => {"api_key" => $api_key})->status_is(200);
+$t->post_ok('/valid_cluster_tie_breaker_indices' => {"api_key" => $api_key})->status_is(200);
 $res = $t->tx->res->json;
 my %tie_breakers;
 @tie_breakers{@{$res->{result}}} = ();
