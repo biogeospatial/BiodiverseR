@@ -21,22 +21,25 @@ BugReports: https://github.com/shawnlaffan/BiodiverseR/issues
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.0
+RoxygenNote: 7.3.1
 Depends: R (>= 4.1.0)
-Suggests: 
-    testthat (>= 3.0.0)
-Config/testthat/edition: 3
 Imports: 
     fs,
     processx,
     httpuv,
+    httr,
     httr2,
     rjson,
     tools,
-    ape,
     utils,
     R6,
     checkmate,
+    perlbrewr,
+Suggests: 
+    testthat (>= 3.0.0),
+    ape,
     openssl,
     stringi
+Remotes: github::kiwiroy/perlbrewr
 License: GPL (>= 3)
+Config/testthat/edition: 3

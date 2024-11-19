@@ -21,7 +21,7 @@ jobs:
       
       - uses: shogo82148/actions-setup-perl@v1
         with:
-          perl-version: '5.32'
+          perl-version: '5.36'
 
       - name: update apt get
         run: |
@@ -41,7 +41,7 @@ jobs:
       - name: Prepare for cache
         run: |
           perl -V > perlversion.txt
-          echo '20220630' >> perlversion.txt
+          echo '20241001' >> perlversion.txt
           ls -l perlversion.txt
 
       - name: Cache CPAN modules

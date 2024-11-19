@@ -12,9 +12,8 @@
 #' @param tree class phylo
 #' @param cluster_tie_breakers
 #'
-#' @return The processed results of the cluster analysis 
+#' @return The processed results of the cluster analysis
 #'
-#' @export
 #' @examples
 #' if(interactive()) {
 #'   bd = BiodiverseR::basedata$new(cellsizes=c(500,500))

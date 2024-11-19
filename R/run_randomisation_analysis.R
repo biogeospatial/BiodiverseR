@@ -11,15 +11,16 @@
 #' @param ...
 #'
 #' @return Returns the results from calling the server
-#' 
-#' @export
+#'
 #' @examples
 #' if(interactive()) {
 #'   bd = basedata$new(cellsizes=c(500,500))
 #'   r_data = list(
+#'          data = list (
 #'                 '250:250' = list (r1 = 13758, r2 = 13860),
 #'                 '250:750' = list (r1 = 11003, r2 = 11134),
 #'                )
+#'           )
 #'
 #'   params = list (bd_params = r_data, raster_params = NULL)
 #'   bd$load_data(params)
@@ -33,13 +34,12 @@
 #'   )
 #'
 #'   bd$run_randomisation_analysis (
-#'     bd                 = bd
-#'     rand_function      = 'some_rand_function'
-#'     iterations         = integer
+#'     bd                 = bd,
+#'     rand_function      = 'some_rand_function',
+#'     iterations         = integer,
 #'     name               = 'some_name',
 #'     spatial_conditions = c("calc_endemism_central", "calc_richness", "calc_pd"),
 #'     def_query          = 'some_def_query'
-#'     ...
 #'   )
 #' }
 run_randomisation_analysis = function (

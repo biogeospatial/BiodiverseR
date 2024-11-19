@@ -16,6 +16,9 @@
 # User-specific files
 .Ruserdata
 
+#  build dir
+/_build
+
 # Example code in package build process
 *-Ex.R
 
@@ -60,3 +63,7 @@ BiodiverseR_log*.txt
 
 #  arcgis sidecar files
 *.aux.xml
+
+#  R build files
+_build
+.build

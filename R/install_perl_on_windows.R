@@ -1,10 +1,10 @@
-#' Install a version of strawberry perl to run the server
+#' Initialise a version of strawberry perl to run the server
 #'
 #' @examples
 #' if(interactive()) {
-#'   install_strawberry_perl()
+#'   init_strawberry_perl()
 #' }
-install_strawberry_perl = function () {
+init_strawberry_perl = function () {
   appdata = Sys.getenv('APPDATA')
 
   bd_path    = fs::path (appdata, 'BiodiverseR')

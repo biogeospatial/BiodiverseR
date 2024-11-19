@@ -9,7 +9,7 @@ use List::Util qw /first/;
 
 use Mojo::Base 'Mojolicious', -signatures;
 
-use Data::Printer;
+use Data::Printer qw /p np/;
 
 use Biodiverse::BaseData;
 
@@ -53,6 +53,18 @@ sub get_basedata_ref {
     $self->{basedata};
 }
 
+sub set_logger {
+    my ($class, $logger) = @_;
+    my $self = $class->get_instance;
+    $self->{logger} = $logger;
+}
+
+sub get_logger {
+    my ($class, $logger) = @_;
+    my $self = $class->get_instance;
+    return $self->{logger};
+}
+
 sub delete_output ($self, $args) {
     my $name = $args->{name};
     my $bd = $self->get_basedata_ref;
@@ -88,8 +100,16 @@ sub _as_arrray_ref {
 sub load_data ($class, $args) {
     my $bd = get_basedata_ref();
 
+    my $log = $class->get_logger;
+
     if (my $bd_data = $args->{bd_params}) {
         my $data = $bd_data->{data};
+
+        # $log->debug (np $bd_data);
+
+        croak "bd_params does not contain a valid 'data' entry"
+            if !defined $data || !is_hashref ($data);
+
         # say STDERR "Loading bd_data";
         # p $bd_data;
         #  needs to be a more general call
@@ -97,11 +117,14 @@ sub load_data ($class, $args) {
             quote_char => $bd->get_param('QUOTES'),
             sep_char   => $bd->get_param('JOIN_CHAR')
         );
+        #  third arg is allow empty groups - we need an arg for this
+        #  fourth arg is transpose - we need an arg for this also
         eval {
-            $bd->add_elements_collated_simple_aa($data, $csv_object, 1);
+            $bd->add_elements_collated_simple_aa($data, $csv_object, 1, 0);
         };
         my $e = $@;
         # say STDERR "Error is '$e'";
+        # $log->debug (np $bd->get_groups_ref);
         # my $lb = $bd->get_labels_ref;
         # p $lb;
         croak $e if $e;

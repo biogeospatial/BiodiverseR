@@ -7,7 +7,6 @@
 #' @param tree class phylo
 #' @param ... passed on to start_server call
 #'
-#' @export
 #' @examples
 #' if(interactive()) {
 #'   analyse_rasters_spatial (
@@ -73,7 +72,7 @@ analyse_rasters_spatial = function(
   config$server_object$kill()
 
   # browser()
-  
+
   processed_results = list()
   #  lapply? - nah.  There will never be more than ten list elements
   for (list_name in sort(names(call_results))) {

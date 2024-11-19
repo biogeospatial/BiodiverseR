@@ -1,6 +1,3 @@
-library("R6")
-
-
 #' Create a new BiodiverseR::basedata object
 #' and its associated server object.
 #'
@@ -30,7 +27,7 @@ library("R6")
 #' if(interactive()) {
 #'   b = BiodiverseR::basedata$new(name = "trial")
 #' }
-basedata = R6Class("basedata",
+basedata = R6::R6Class("basedata",
    cloneable = FALSE, #  we need to dup the server for this to work
    public = list(
     name   = NULL,

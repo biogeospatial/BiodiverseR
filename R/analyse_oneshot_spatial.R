@@ -12,7 +12,6 @@
 #'
 #' @return The results of the analysis as an R list
 #'
-#' @export
 #' @examples
 #' if(interactive()) {
 #'   analysis_results = analyse_oneshot_spatial (
@@ -20,7 +19,7 @@
 #'     r_data                   = list(
 #'                                     '250:250' = list (r1 = 13758, r2 = 13860),
 #'                                     '250:750' = list (r1 = 11003, r2 = 11134),
-#'                                    )
+#'                                    ),
 #'     spreadsheet_data         = c("r1.xlsx", "r2.xlsx"),
 #'     delimited_text_file_data = c("r1.csv", "r2.csv"),
 #'     shapefile_data           = c("r1.shp", "r2.shp"),
