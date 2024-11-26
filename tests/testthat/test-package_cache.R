@@ -26,6 +26,9 @@ test_that("Test to see if package cache is created after analysis call", {
   # Simple checks for correct type and to check if env was properly populated
   expect_equal(typeof(result), "environment")
   expect_true(length(result) > 0)
+  # message(result$indices_metadata[[1]])
+
+  message(result$indices_metadata[[1]]$description)
 
   # Check if the content of the env exists
   expect_true(!is.null(result$indices_metadata))
