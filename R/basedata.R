@@ -199,16 +199,17 @@ basedata = R6::R6Class("basedata",
       cache = get_indices_metadata()
       # TODO: ARG ERROR CHECKING
     },
-    get_indices_metadata = function (cache_type) {
-      if (is.null(self$cache_list[[cache_type]])) {
-        self$cache_list[[cache_type]] = new.env()
+    get_indices_metadata = function () {
+      cache_key = 'indices_metadata'
+      if (is.null(self$cache_list[[cache_key]])) {
+        self$cache_list[[cache_key]] = new.env()
         indices_metadata = self$call_server("calculations_metadata")
-        assign("indices_metadata", indices_metadata, envir=self$cache_list[[cache_type]])
+        assign("indices_metadata", indices_metadata, envir=self$cache_list[[cache_key]])
       }
 
       # Returns the environment of indices metadata itself
       # Example access: cache_list[[cache_type]]$indices_metadata
-      return (self$cache_list[[cache_type]])
+      return (self$cache_list[[cache_key]])
     },
     get_label_count = function () {
       self$call_server("bd_get_label_count")
