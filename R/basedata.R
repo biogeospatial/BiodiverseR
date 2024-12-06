@@ -1,3 +1,5 @@
+package_cache = new.env(parent = emptyenv())
+
 #' Create a new BiodiverseR::basedata object
 #' and its associated server object.
 #'
@@ -34,14 +36,19 @@ basedata = R6::R6Class("basedata",
     server = NULL,
     cellsizes   = NULL,
     cellorigins = NULL,
+    cache_list = NULL,
     initialize = function(
         name = paste("BiodiverseR::basedata", date()),
         cellsizes,
         cellorigins,
         filename = '',
-        port=0, use_exe=FALSE, perl_path=NA
+        port=0, use_exe=FALSE, perl_path=NA,
+        cache_list = list()
       ) {
       self$name = name
+
+      self$cache_list = cache_list
+
 
       if (filename == '') {
         checkmate::assert_vector(cellsizes, any.missing=FALSE, min.len=1)
@@ -126,6 +133,9 @@ basedata = R6::R6Class("basedata",
       # call_results <- httr::content(response, "parsed")
 
       req <- httr2::request(target_url)
+      # if (!is.null(params)) {
+       #   req <- httr2::req_body_raw(req, params_as_json)
+      # }
       req <- httr2::req_body_raw(req, params_as_json)
       req <- httr2::req_headers(req, api_key = self$server$server_api_key)
       response <- httr2::req_perform(req)
@@ -186,6 +196,21 @@ basedata = R6::R6Class("basedata",
     },
     get_group_count = function () {
       self$call_server("bd_get_group_count")
+    },
+    calcs_are_valid = function () {
+      cache = get_indices_metadata()
+      # TODO: ARG ERROR CHECKING
+    },
+    get_indices_metadata = function () {
+      cache_key = 'indices_metadata'
+      if (is.null(package_cache[[cache_key]])) {
+        # message ("Populating indices cache")
+        package_cache[[cache_key]] = new.env()
+        indices_metadata = self$call_server("calculations_metadata")
+        assign("metadata", indices_metadata, envir=package_cache)
+      }
+
+      return (package_cache[["metadata"]])
     },
     get_label_count = function () {
       self$call_server("bd_get_label_count")
