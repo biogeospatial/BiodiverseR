@@ -68,6 +68,7 @@ sub get_indices_metadata ($self, %args) {
         my $meta = $indices->get_metadata(sub => $calculation)->clone; #  clone for safety
         $metadata->{$calculation}{description} = $meta->get_description;
         $metadata->{$calculation}{indices} = $meta->get_indices;
+        $metadata->{$calculation}{uses_nbr_lists} = $meta->get_uses_nbr_lists;
     }
 
     return _recursive_unbless($metadata);

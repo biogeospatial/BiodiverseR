@@ -15,7 +15,11 @@ $t->post_ok('/calculations_metadata' => {"api_key" => $api_key})->status_is(200)
 $t->json_has ('/result/calc_phylo_rpe2/description');
 $t->json_has ('/result/calc_endemism_whole/indices/ENDW_CWE');
 $t->json_has ('/result/calc_phylo_rpd2/required_args');
+$t->json_has ('/result/calc_phylo_rpd2/uses_nbr_lists');
 $t->json_has ('/result/calc_phylo_rpe2/indices/PHYLO_RPE_DIFF2/description');
+$t->json_is ('/result/calc_phylo_rpd2/uses_nbr_lists' => 1, "calc_phylo_rpd2 requires one nbr set");
+$t->json_is ('/result/calc_bray_curtis/uses_nbr_lists' => 2, "calc_bray_curtis requires two nbr sets");
+
 
 $t->get_ok('/valid_cluster_linkage_functions' => {"api_key" => $api_key})->status_is(200);
 my $res = $t->tx->res->json;

@@ -1,3 +1,5 @@
+package_cache = new.env(parent = emptyenv())
+
 #' Create a new BiodiverseR::basedata object
 #' and its associated server object.
 #'
@@ -195,27 +197,20 @@ basedata = R6::R6Class("basedata",
     get_group_count = function () {
       self$call_server("bd_get_group_count")
     },
-    get_indices_metadata = function (cache_type) {
-      if (is.null(self$cache_list[[cache_type]])) {
-        self$cache_list[[cache_type]] = new.env()
-        indices_metadata = self$call_server("calculations_metadata")
-        assign("indices_metadata", indices_metadata, envir=self$cache_list[[cache_type]])
-        self$cache_list[[cache_type]]
-      }
-
-      # Returns the environment of indices metadata itself
-      # Example access: cache_list[[cache_type]]$indices_metadata
-      return (self$cache_list[[cache_type]])
-    },
-    calcs_are_valid = function (cache_type) {
-      cache = get_indices_metadata(cache_type)
+    calcs_are_valid = function () {
+      cache = get_indices_metadata()
       # TODO: ARG ERROR CHECKING
-      valid = FALSE
-      if (!is.null()) {
-        
+    },
+    get_indices_metadata = function () {
+      cache_key = 'indices_metadata'
+      if (is.null(package_cache[[cache_key]])) {
+        # message ("Populating indices cache")
+        package_cache[[cache_key]] = new.env()
+        indices_metadata = self$call_server("calculations_metadata")
+        assign("metadata", indices_metadata, envir=package_cache)
       }
 
-      return (valid)
+      return (package_cache[["metadata"]])
     },
     get_label_count = function () {
       self$call_server("bd_get_label_count")
