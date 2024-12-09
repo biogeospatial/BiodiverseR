@@ -197,10 +197,6 @@ basedata = R6::R6Class("basedata",
     get_group_count = function () {
       self$call_server("bd_get_group_count")
     },
-    calcs_are_valid = function () {
-      cache = get_indices_metadata()
-      # TODO: ARG ERROR CHECKING
-    },
     get_indices_metadata = function () {
       cache_key = 'indices_metadata'
       if (is.null(package_cache[[cache_key]])) {
@@ -211,6 +207,31 @@ basedata = R6::R6Class("basedata",
       }
 
       return (package_cache[["metadata"]])
+    },
+    calcs_are_valid = function (calculations) {
+      valid_list = list()
+      for (calc in calculations) {
+        curr_calc = package_cache[["metadata"]][[calc]]
+        # print(curr_calc)
+
+        # TODO: validate calculation name
+        # TODO: check required args (mainly if a tree is needed at the moment)
+        # TODO: check neighbour sets
+        if (is.null(curr_calc$name) || is.null(curr_calc$required_args) || is.null(curr_calc$uses_nbr_lists)) {
+          valid_list[calc] = FALSE
+        } else {
+          valid_list[calc] = TRUE
+        }
+
+      }
+      # calc = list() {
+      #   description: str,
+      #   indices: str,
+      #   required_args: str,
+      #   uses_nbr_lists: integer
+      # }
+
+      return(valid_list)
     },
     get_label_count = function () {
       self$call_server("bd_get_label_count")
