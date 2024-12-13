@@ -208,30 +208,32 @@ basedata = R6::R6Class("basedata",
 
       return (package_cache[["metadata"]])
     },
-    calcs_are_valid = function (calculations) {
-      valid_list = list()
-      for (calc in calculations) {
-        curr_calc = package_cache[["metadata"]][[calc]]
-        # print(curr_calc)
+    calcs_are_valid = function (calc_names) {
+      valid_calcs = c()
+      count = 1
+      for (calc in calc_names) {
+        curr_calc = get("metadata", envir=package_cache)[[calc]]
+        print(curr_calc)
 
         # TODO: validate calculation name
         # TODO: check required args (mainly if a tree is needed at the moment)
         # TODO: check neighbour sets
-        if (is.null(curr_calc$name) || is.null(curr_calc$required_args) || is.null(curr_calc$uses_nbr_lists)) {
-          valid_list[calc] = FALSE
+        if (is.null(curr_calc$name)) {
+          valid_calcs[count] = FALSE
         } else {
-          valid_list[calc] = TRUE
+          valid_calcs[count] = TRUE
         }
 
+        count = count + 1
       }
-      # calc = list() {
-      #   description: str,
-      #   indices: str,
-      #   required_args: str,
-      #   uses_nbr_lists: integer
-      # }
 
-      return(valid_list)
+      if (any(!valid_calcs)) {
+        message("Error in calcs_are_valid :")
+        e = cat("Invalid calcs: ", paste(calc_names[!valid_calcs], collapse = ", "), "\n")
+        stop(e)
+      }
+
+      return(valid_calcs)
     },
     get_label_count = function () {
       self$call_server("bd_get_label_count")
