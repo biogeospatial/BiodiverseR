@@ -236,10 +236,7 @@ basedata = R6::R6Class("basedata",
       invalid_req_args = c()
       for (calc_name in calc_names) {
         curr_calc = metadata[[calc_name]]
-        print(curr_calc)
-
-        # TODO: check required args (mainly if a tree is needed at the moment)
-        # TODO: check neighbour sets
+        # print(curr_calc)
 
         if (available_neighbour_sets < curr_calc[["uses_nbr_lists"]]) {
           valid_calcs[count] = FALSE
@@ -260,7 +257,7 @@ basedata = R6::R6Class("basedata",
         stop(e)
       }
 
-      return(valid_calcs)
+      return(TRUE)
     },
     get_label_count = function () {
       self$call_server("bd_get_label_count")
