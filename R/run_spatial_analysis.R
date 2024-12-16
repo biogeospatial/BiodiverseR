@@ -36,6 +36,7 @@ run_spatial_analysis = function (
 # message (class(calculations))
 # message ("------")
   stopifnot(checkmate::test_vector(calculations))
+  stopifnot(bd$calcs_are_valid(calculations, spatial_conditions, def_query, tree))
 
   # params = as.list(match.call())
   # params[["bd"]] = NULL
