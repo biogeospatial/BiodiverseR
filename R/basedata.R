@@ -208,20 +208,47 @@ basedata = R6::R6Class("basedata",
 
       return (package_cache[["metadata"]])
     },
-    calcs_are_valid = function (calc_names) {
+    calcs_are_valid = function (calc_names, neighbours, spatial_conditions=NULL, def_query=NULL, tree_ref=NULL) {
       valid_calcs = c()
       count = 1
-      for (calc in calc_names) {
-        curr_calc = get("metadata", envir=package_cache)[[calc]]
+      metadata = self$get_indices_metadata()
+
+      # Validate calc names
+      all_valid = all(calc_names %in% names(metadata))
+      if (!all_valid) {
+        # message("Error in calcs_are_valid :")
+        e = cat("Error invalid calc name(s): ", calc_names[which (!(calc_names %in% names(metadata)))])
+        stop(e)
+      }
+
+      available_neighbour_sets = 1
+      if (!is.null(spatial_conditions)) {
+        # CHECK SPATIAL COND
+        available_neighbour_sets = length(spatial_conditions)
+      }
+      
+      if (!is.null(def_query) && checkmate::test_scalar(def_query)) {
+        e = cat("Error: Invalid def_query (not a scalar): ")
+        stop(e)
+      }
+
+      invalid_neighbour_sets = c()
+      invalid_req_args = c()
+      for (calc_name in calc_names) {
+        curr_calc = metadata[[calc_name]]
         print(curr_calc)
 
-        # TODO: validate calculation name
         # TODO: check required args (mainly if a tree is needed at the moment)
         # TODO: check neighbour sets
-        if (is.null(curr_calc$name)) {
+
+        if (available_neighbour_sets < curr_calc[["uses_nbr_lists"]]) {
           valid_calcs[count] = FALSE
-        } else {
-          valid_calcs[count] = TRUE
+          append(invalid_neighbour_sets, calc_name)
+        }
+
+        curr_req_args = as.character(curr_calc[["required_args"]])
+        if (is.null(tree_ref) && any(curr_req_args == "tree")) {
+          append(invalid_req_args, calc_name)
         }
 
         count = count + 1
