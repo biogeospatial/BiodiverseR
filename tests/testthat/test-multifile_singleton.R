@@ -118,7 +118,7 @@ test_that("Analyse singleton handles multiple input files", {
         f = fs::file_temp(pattern = "test_", tmp_dir = tempdir(), ext = "bds")
         #message ("Saving to ", f)
         results = bd$save_to_bds (f)
-        expect_equal(results, 1, info="basedata saved to file")
+        expect_true(results, info="basedata saved to file")
         bd2 = basedata$new(filename = f)
         gp_cnt = bd2$get_group_count()
         expect_equal(

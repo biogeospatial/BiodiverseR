@@ -197,10 +197,6 @@ basedata = R6::R6Class("basedata",
     get_group_count = function () {
       self$call_server("bd_get_group_count")
     },
-    calcs_are_valid = function () {
-      cache = get_indices_metadata()
-      # TODO: ARG ERROR CHECKING
-    },
     get_indices_metadata = function () {
       cache_key = 'indices_metadata'
       if (is.null(package_cache[[cache_key]])) {
@@ -211,6 +207,59 @@ basedata = R6::R6Class("basedata",
       }
 
       return (package_cache[["metadata"]])
+    },
+    calcs_are_valid = function (calc_names, spatial_conditions, def_query=NULL, tree_ref=NULL) {
+      metadata = self$get_indices_metadata()
+
+      # Validate calc names
+      all_valid = all(calc_names %in% names(metadata))
+      if (!all_valid) {
+        # message("Error in calcs_are_valid :")
+        e = cat("Error: Invalid calc name(s): ", calc_names[which (!(calc_names %in% names(metadata)))])
+        stop(e)
+      }
+
+      available_neighbour_sets = 1
+      if (!is.null(spatial_conditions)) {
+        # CHECK SPATIAL COND
+        available_neighbour_sets = length(spatial_conditions)
+      }
+
+      if (!is.null(def_query) && !checkmate::test_scalar(def_query)) {
+        e = cat("Error: Invalid def_query (not a scalar): ")
+        stop(e)
+      }
+
+      invalid_neighbour_sets = c()
+      invalid_req_args = c()
+      for (calc_name in calc_names) {
+        curr_calc = metadata[[calc_name]]
+        # print(curr_calc)
+
+        if (available_neighbour_sets < curr_calc[["uses_nbr_lists"]]) {
+          invalid_neighbour_sets = append(invalid_neighbour_sets, calc_name)
+        }
+
+        curr_req_args = as.character(curr_calc[["required_args"]])
+        if (is.null(tree_ref) && any(curr_req_args == "tree")) {
+          invalid_req_args = append(invalid_req_args, calc_name)
+        }
+
+      }
+
+      if (length(invalid_req_args) > 0) {
+        # message("Error: Invalid calcs given :")
+        e = cat("Error: Missing tree arg: ", paste(invalid_req_args, collapse = ", "), "\n")
+        stop(e)
+      }
+
+
+      if (length(invalid_neighbour_sets) > 0) {
+        e = cat("Error: Insufficient spatial conditions: ", paste(invalid_neighbour_sets, collapse = ", "), "\n")
+        stop(e)
+      }
+
+      return(TRUE)
     },
     get_label_count = function () {
       self$call_server("bd_get_label_count")
