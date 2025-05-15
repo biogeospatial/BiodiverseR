@@ -22,10 +22,7 @@
 #'                )
 #'           )
 #'
-#'   params = list (bd_params = r_data, raster_params = NULL)
-#'   bd$load_data(params)
-#'
-#'   params = list (bd_params = r_data, raster_params = NULL)
+#'   params = list (raster_params = r_data)
 #'   bd$load_data(params)
 #'
 #'   bd$run_cluster_analysis (

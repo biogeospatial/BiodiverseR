@@ -23,7 +23,7 @@
 #'                 '250:750' = list (r2 = 11),
 #'                )
 #'
-#'   params = list (bd_params = r_data, raster_params = NULL)
+#'   params = list (raster_params = r_data)
 #'   result = bd$load_data(params)
 #'
 #'   results = bd$run_cluster_analysis (
