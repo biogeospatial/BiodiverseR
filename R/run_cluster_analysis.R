@@ -18,10 +18,7 @@
 #' if(interactive()) {
 #'   bd = BiodiverseR::basedata$new(cellsizes=c(500,500))
 #'
-#'   r_data = list(
-#'                 '250:250' = list (r1 = 13, r2 = 13),
-#'                 '250:750' = list (r2 = 11),
-#'                )
+#'   r_data = normalizePath(list.files (path = file_path, pattern = "r[123].tif$",  full.names=TRUE))
 #'
 #'   params = list (raster_params = r_data)
 #'   result = bd$load_data(params)
