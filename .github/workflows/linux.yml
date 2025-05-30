@@ -91,7 +91,7 @@ jobs:
 
       - name: Upload mojo logs
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: mojo-files
           path: /home/runner/BiodiverseR/logs/*.txt
