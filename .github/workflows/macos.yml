@@ -1,4 +1,4 @@
-name: linux
+name: macos
 
 on:
   push:
@@ -9,51 +9,52 @@ on:
   pull_request:
 
 env:
-  PERL_MOD_DIR: /home/runner/perl5/lib/perl5
+  PERL5LIB: /Users/runner/perl5/lib/perl5
+  PERL_LOCAL_LIB_ROOT: /Users/runner/perl5
+  PERL_MB_OPT: --install_base /Users/runner/perl5
+  PERL_MM_OPT: INSTALL_BASE=/Users/runner/perl5
 
 jobs:
-  linux_workflow:
+  mac_workflow:
 
-    runs-on: ubuntu-latest
+    runs-on: macOS-latest
 
     steps:
-      - uses: actions/checkout@v3
-      
-      - name: Copy CPANFILE
-        run: |
-          cp inst/perl/cpanfile .
+      - uses: actions/checkout@v4
 
-      - name: update apt get
+      - name: Set up Perl
         run: |
-          sudo apt-get update
+          brew install perl
+          echo "/Users/runner/perl5/bin" >> $GITHUB_PATH
+          mkdir -p ~/bin
+          cd ~/bin
+          curl -L https://cpanmin.us/ -o cpanm
+          chmod +x cpanm
+          echo "~/bin" >> $GITHUB_PATH
+          which perl
+          which cpanm
 
-      - name: gdal stack
+      #  some painful steps here that will hopefully be backed out at some point
+      - name: Install GDAL and its deps
         run: |
-          sudo apt-get --yes install libgdal-dev
-
-      - name: cmake for geos and proj
-        run: |
-          sudo apt-get --yes install cmake
-      
-      - uses: shogo82148/actions-setup-perl@v1
-        with:
-          perl-version: "5.38"
-          distribution: strawberry
-          install-modules-with: cpanm
-          install-modules-args: --with-develop --with-configure --verbose
-
+          brew update
+          # brew unlink pkg-config@0.29.2
+          brew install pkgconf
+          brew link --overwrite pkgconf
+          brew install gdal
+          # brew install --force --overwrite gdal
+        
       - name: perl -V
         run: perl -V
 
       - name: Prepare for cache
         run: |
           perl -V > perlversion.txt
-          echo '20241001' >> perlversion.txt
+          echo '20241125' >> perlversion.txt
           ls -l perlversion.txt
 
       - name: Cache CPAN modules
-        if: always()
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/perl5
           key: ${{ runner.os }}-build-${{ hashFiles('perlversion.txt') }}
@@ -62,10 +63,6 @@ jobs:
 
       - name: Install Dynamic Dependencies
         run: |
-          # These are all picked up by the Biodiverse install
-          #  but it is useful to have the GDAL related stuff done verbosely
-          which -a cpanm
-          which -a perl
           cpanm --notest local::lib
           echo $(perl -Mlocal::lib=${HOME}/perl5)
           eval "$(perl -Mlocal::lib=${HOME}/perl5)"
@@ -85,17 +82,15 @@ jobs:
           cpanm --notest https://github.com/shawnlaffan/biodiverse.git
           cpanm --notest Excel::ValueReader::XLSX
           cd inst/perl
-          cpanm --installdeps .
+          cpanm --notest --installdeps .
           cd -
-
+      
       - name: Run Perl Tests
         run: |
-          echo $(perl -Mlocal::lib=${HOME}/perl5)
-          eval "$(perl -Mlocal::lib=${HOME}/perl5)"
           cd inst/perl
           prove -l -j4 t
           cd -
-        
+      
       - name: Upload mojo logs
         if: always()
         uses: actions/upload-artifact@v4
@@ -112,4 +107,3 @@ jobs:
       - name: Run R Tests
         run: |
           Rscript --no-save tests/testthat.R
-        

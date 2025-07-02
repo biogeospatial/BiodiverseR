@@ -1,4 +1,3 @@
+devtools::load_all()
 library(testthat)
-library(BiodiverseR)
-
-test_check("BiodiverseR")
+devtools::test()
