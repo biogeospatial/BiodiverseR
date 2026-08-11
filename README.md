@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-**NOTE: This is currently in development. **
+**NOTE:** This is currently in development.
 
 # BiodiverseR
 
@@ -19,70 +19,69 @@ page](https://github.com/shawnlaffan/biodiverse).
 
 ## Installation
 
-This is a two step process. First, install Perl so the Biodiverse engine
-can run. Second, install the BiodiverseR R package.
+You can install BiodiverseR as an end user or as a developer. If you only want 
+to use BiodiverseR, follow the [end user installation instructions](#End-User-installation) below. If 
+you want to develop BiodiverseR, follow the [developer installation instructions](#Developer_installation) below.
 
-1.  Install Perl
+**NOTE:** You will need a working installation of R. Follow the R installation 
+instructions at [The R Project](https://www.r-project.org/).
 
-BiodiverseR currently requires a working perl interpreter in your path.
-(Future versions will provide self contained executables).
+### End User installation
+Below are instructions for installing BiodiverseR on Windows or unix-derived 
+systems like MacOS and Linux.
 
-On Windows a perl interpreter can be obtained through the [Strawberry
-perl project](https://strawberryperl.com/releases.html). This will be
-downloaded automatically when using the commands below.
+#### Windows
 
-Most unix-derived systems such as Linux and Mac provide a perl
-interpreter but it is best to avoid this and install
-[perlbrew](https://perlbrew.pl/Installation.html) so you have a separate
-installation.  
-When you install perlbrew be sure to also install the cpanm utility (run
-this in your shell after starting perlbrew: `perlbrew install-cpanm`).
-
-You also need to have git installed on your system.
-
-2.  Install the R code
-
-You can install the R code like so:
+In R, run the following commands:
 
 ``` r
-# install.packages("devtools")
-library("devtools")
-install_github("shawnlaffan/BiodiverseR")
-```
-
-However, it is currently best to work within the git repo given ongoing
-development updates.
-
-Set your working directory to be the top of the git repo and then run
-this:
-
-``` r
-# install.packages("devtools")
-library("devtools")
-load_all()
-```
-
-These next commands will install the Biodiverse engine and its perl
-dependencies. The first one does nothing on Windows but there is no harm
-in running it.
-
-``` r
-init_perlbrewr()
+install.packages("pak")
+pak::pak("shawnlaffan/BiodiverseR")
 install_perl_deps()
 ```
+**Note:** The above may take a while.
 
-Note that the above will take a while if you do not already have the
-GDAL development package installed on your system. This is because it
-will compile its own version if it is unable to find one on the system
-(but maybe this is not such a bad thing as then it will be isolated from
-system changes). If you do want to install a system version then see the
-[GDAL documentation](https://gdal.org/en/latest/download.html#binaries).
+Once complete, follow the [End User Quick Test](#End-User-Quick-Test) instructions below to make sure 
+BiodiverseR is working.
 
-## Quick demo
+#### MacOS and Linux
 
-Check that a Biodiverse server can be started. The analytical functions
-call this internally so if it does not work then neither will rest of
-the system.
+#### End User Quick Test
+To see if BiodiverseR is working, you will need to check if the Biodiverse 
+server can be started. Run the code below in R to see if the Biodiverse 
+server successfully starts. 
+``` r
+# start the server
+cs = start_server()
+
+# Check the server
+cs$server_object$is_alive()
+
+# cleanup the server
+rm(cs)
+gc()
+```
+If
+``` r
+cs$server_object$is_alive()
+```
+returns TRUE then the test was successful and BiodiverseR is working.
+
+### Developer installation
+Below are instructions for installing BiodiverseR on Windows or unix-derived 
+systems like MacOS and Linux if you want to develop BiodiverseR.
+
+#### Windows
+
+
+#### MacOS and Linux
+
+
+## Developer Quick test
+
+To see if BiodiverseR is working, you will need to check if the Biodiverse 
+server can be started. Run the code below in R to see if the Biodiverse 
+server successfully starts. 
 
 ``` r
 #  If you have not used the perlbrewr() or strawberry perl options then this 
@@ -100,3 +99,10 @@ cs$server_object$is_alive()
 rm(cs)
 gc()  #  server is not deleted until garbage collection is run
 ```
+
+If
+``` r
+cs$server_object$is_alive()
+```
+returns TRUE then the test was successful and BiodiverseR is working.
+
