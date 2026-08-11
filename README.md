@@ -5,11 +5,6 @@
 
 # BiodiverseR
 
-<!-- badges: start -->
-
-[![R-CMD-check](https://github.com/shawnlaffan/Biodiverse-R/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/shawnlaffan/Biodiverse-R/actions/workflows/R-CMD-check.yaml)
-<!-- badges: end -->
-
 Provides an R interface to the analyses available in Biodiverse.
 Biodiverse is a tool for the spatial analysis of diversity using indices
 based on taxonomic, phylogenetic, trait and matrix-based (e.g. genetic
