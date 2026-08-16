@@ -7,13 +7,25 @@
 init_strawberry_perl = function () {
   appdata = Sys.getenv('APPDATA')
 
-  bd_path    = fs::path (appdata, 'BiodiverseR')
-  extract_to = fs::dir_create (bd_path, 'sp5380')
+  # Local BiodiverseR path
+  bd_path <- fs::path(appdata, "BiodiverseR")
 
-  #  hard coded is suboptimal
-  sp_url = 'https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_5380_5361/strawberry-perl-5.38.0.1-64bit-PDL.zip'
-  sp_zip = fs::path(bd_path, 'strawberry-perl-5.38.0.1-64bit-PDL.zip')
+  # Load release metadata
+  json_url <- "https://raw.githubusercontent.com/biogeospatial/biodiverse-sp-portable/main/releases.json"
+  meta <- rjson::fromJSON(file = json_url)
 
+  # Get metadata for the current release
+  current_version <- meta$current
+  release_info <- meta$releases[[current_version]]
+
+  # Download URL for the current release
+  sp_url <- release_info$url
+
+  # Extract into a version-specific directory
+  extract_to <- fs::dir_create(bd_path, current_version)
+
+  # Local path for the downloaded zip file
+  sp_zip <- fs::path(bd_path, basename(sp_url))
 
   if (!fs::dir_exists (extract_to)) {
     fs::dir_create(extract_to)
@@ -24,7 +36,7 @@ init_strawberry_perl = function () {
     tryCatch ({
       options (timeout = 180)
       #utils::download.file (sp_url, sp_zip)
-      
+
       # httr::GET(sp_url, httr::write_disk(sp_zip, overwrite=TRUE))
       # utils::unzip (sp_zip, exdir = extract_to)
 
