@@ -21,7 +21,7 @@ jobs:
       
       - uses: shogo82148/actions-setup-perl@v1
         with:
-          perl-version: '5.36'
+          perl-version: '5.42'
 
       - name: update apt get
         run: |
@@ -29,11 +29,15 @@ jobs:
 
       - name: gdal stack
         run: |
-          sudo apt-get --yes install libgdal-dev
+          sudo apt-get --yes install libgdal-dev 
 
       - name: cmake for geos and proj
         run: |
           sudo apt-get --yes install cmake
+
+      - name: gsl
+        run: |
+          sudo apt-get --yes install libgsl-dev
 
       - name: perl -V
         run: perl -V
@@ -41,7 +45,7 @@ jobs:
       - name: Prepare for cache
         run: |
           perl -V > perlversion.txt
-          echo '20241001' >> perlversion.txt
+          echo '20260817' >> perlversion.txt
           ls -l perlversion.txt
 
       - name: Cache CPAN modules
