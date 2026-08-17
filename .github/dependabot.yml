@@ -1,0 +1,7 @@
+version: 2  # Dependabot config
+
+updates:
+  - package-ecosystem: "github-actions"  # Update GitHub Actions
+    directory: "/"                       # Scan workflows in repo
+    schedule:
+      interval: "weekly"                 # Check once a week
