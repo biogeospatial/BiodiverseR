@@ -46,7 +46,7 @@ jobs:
 
       - name: Cache CPAN modules
         if: always()
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           path: ~/perl5
           key: ${{ runner.os }}-build-${{ hashFiles('perlversion.txt') }}
