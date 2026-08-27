@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-**NOTE:** This is currently in development.
+**NOTE**: This is currently in development.
 
 # BiodiverseR
 
@@ -14,90 +14,91 @@ page](https://github.com/shawnlaffan/biodiverse).
 
 ## Installation
 
-You can install BiodiverseR as an end user or as a developer. If you only want 
-to use BiodiverseR, follow the [end user installation instructions](#End-User-installation) below. If 
-you want to develop BiodiverseR, follow the [developer installation instructions](#Developer_installation) below.
+You can install BiodiverseR as an end user or as a developer. If you
+only want to use BiodiverseR, follow the [end user installation
+instructions](#End-User-installation) below. If you want to develop
+BiodiverseR, follow the [developer installation
+instructions](#Developer_installation) below.
 
-**NOTE:** You will need a working installation of R. Follow the R installation 
-instructions at [The R Project](https://www.r-project.org/).
+**NOTE:** You will need a working installation of R and Git. Follow the
+R installation instructions at [The R
+Project](https://www.r-project.org/).
 
 ### End User installation
-Below are instructions for installing BiodiverseR on Windows or unix-derived 
-systems like MacOS and Linux.
+
+Below are instructions for installing BiodiverseR on Windows or
+unix-derived systems like MacOS and Linux.
 
 #### Windows
 
-In R, run the following commands:
+In R, run the following commands to install and test BiodiverseR:
 
 ``` r
-install.packages("pak")
-pak::pak("shawnlaffan/BiodiverseR")
-install_perl_deps()
-```
-**Note:** The above may take a while.
+install.packages("pak")               # Install pak for managing package installs
+pak::pak("biogeospatial/BiodiverseR") # Install BiodiverseR from GitHub
+Install_perl_deps()                   # Install required Perl dependencies. This may take a while.
 
-Once complete, follow the [End User Quick Test](#End-User-Quick-Test) instructions below to make sure 
-BiodiverseR is working.
+# Load the BiodiverseR package
+Library(BiodiverseR)
+
+# Create a BiodiverseR object (this automatically loads data and starts a server)
+bd <- with(read.csv(system.file("extdata", "example_test_data.csv", package = "BiodiverseR")), basedata(x, y, groups))
+
+
+# Print the bd object to confirm successful creation
+bd
+
+# Optional: remove the object to stop the server
+# rm(bd); gc()
+```
 
 #### MacOS and Linux
-
-#### End User Quick Test
-To see if BiodiverseR is working, you will need to check if the Biodiverse 
-server can be started. Run the code below in R to see if the Biodiverse 
-server successfully starts. 
-``` r
-# start the server
-cs = start_server()
-
-# Check the server
-cs$server_object$is_alive()
-
-# cleanup the server
-rm(cs)
-gc()
-```
-If
-``` r
-cs$server_object$is_alive()
-```
-returns TRUE then the test was successful and BiodiverseR is working.
 
 ### Developer installation
-Below are instructions for installing BiodiverseR on Windows or unix-derived 
-systems like MacOS and Linux if you want to develop BiodiverseR.
+
+Below are instructions for installing BiodiverseR on Windows or
+unix-derived systems like MacOS and Linux if you want to develop
+BiodiverseR.
 
 #### Windows
 
+Install the R code
+
+You can install the R code like so:
+
+``` r
+# install.packages("devtools")
+library("devtools")
+install.packages("pak")               # Install pak for managing package installs
+pak::pak("biogeospatial/BiodiverseR") # Install BiodiverseR from GitHub
+```
+
+However, it is currently best to work within the git repo given ongoing
+development updates.
+
+Set your working directory to be the top of the git repo and then run
+this:
+
+``` r
+# install.packages("devtools")
+library("devtools")
+load_all()
+```
+
+These next commands will install the Biodiverse engine and its perl
+dependencies. The first one does nothing on Windows but there is no harm
+in running it.
+
+``` r
+init_perlbrewr()
+install_perl_deps()
+```
+
+Note that the above will take a while if you do not already have the
+GDAL development package installed on your system. This is because it
+will compile its own version if it is unable to find one on the system
+(but maybe this is not such a bad thing as then it will be isolated from
+system changes). If you do want to install a system version then see the
+[GDAL documentation](https://gdal.org/en/latest/download.html#binaries).
 
 #### MacOS and Linux
-
-
-## Developer Quick test
-
-To see if BiodiverseR is working, you will need to check if the Biodiverse 
-server can be started. Run the code below in R to see if the Biodiverse 
-server successfully starts. 
-
-``` r
-#  If you have not used the perlbrewr() or strawberry perl options then this 
-#  next (commented out) command is needed so the system can find wherever you 
-#  have downloaded the package and thus the server code. 
-#  This assumes you are already at the top level of the BiodiverseR repository.  
-#  Sys.setenv("Biodiverse_basepath" = getwd())
-
-#  library(BiodiverseR)
-devtools::load_all()  #  for during development 
-cs = start_server()
-cs$server_object$is_alive()
-
-#  cleanup
-rm(cs)
-gc()  #  server is not deleted until garbage collection is run
-```
-
-If
-``` r
-cs$server_object$is_alive()
-```
-returns TRUE then the test was successful and BiodiverseR is working.
-
