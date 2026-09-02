@@ -30,6 +30,7 @@ Imports:
     httr,
     httr2,
     rjson,
+    openssl,
     tools,
     utils,
     R6,
@@ -38,7 +39,6 @@ Imports:
 Suggests: 
     testthat (>= 3.0.0),
     ape,
-    openssl,
     stringi
 Remotes: github::kiwiroy/perlbrewr
 License: GPL (>= 3)

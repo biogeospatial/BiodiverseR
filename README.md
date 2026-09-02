@@ -36,10 +36,9 @@ In R, run the following commands to install and test BiodiverseR:
 ``` r
 install.packages("pak")               # Install pak for managing package installs
 pak::pak("biogeospatial/BiodiverseR") # Install BiodiverseR from GitHub
-Install_perl_deps()                   # Install required Perl dependencies. This may take a while.
 
 # Load the BiodiverseR package
-Library(BiodiverseR)
+library(BiodiverseR)
 
 # Load an example basedata file and start its server
 bd <- BiodiverseR::basedata$new(

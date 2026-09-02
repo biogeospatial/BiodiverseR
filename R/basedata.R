@@ -42,7 +42,9 @@ basedata = R6::R6Class("basedata",
         cellsizes,
         cellorigins,
         filename = '',
-        port=0, use_exe=FALSE, perl_path=NA,
+        port = 0,
+        use_exe = Sys.info()[["sysname"]] == "Windows",
+        perl_path = NA,
         cache_list = list()
       ) {
       self$name = name

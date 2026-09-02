@@ -1,6 +1,16 @@
 ## Workaround an R CMD check false positive
 dummy_r6 <- function() R6::R6Class
 
+# Published Windows server bundle used by the runtime installer.
+biodiverser_windows_server_version <- "v0.1.0-alpha"
+biodiverser_windows_server_sha256 <- "c4c95ce7f60de5aef0f425579d38b845752db91ff8009c061247a431413ab54a"
+biodiverser_windows_server_url <- paste0(
+  "https://github.com/biogeospatial/",
+  "biodiverseR-perl-engine-builder/releases/download/",
+  biodiverser_windows_server_version,
+  "/BiodiverseR_win_aaf20ba.zip"
+)
+
 
 #' Start the Biodiverse server
 #'
@@ -22,8 +32,11 @@ dummy_r6 <- function() R6::R6Class
 #'   start_server(port=3001, use_exe=FALSE)
 #' }
 
-
-start_server = function(port=0, use_exe=FALSE, perl_path="") {
+start_server = function(
+    port=0,
+    use_exe=Sys.info()[["sysname"]] == "Windows",
+    perl_path=""
+  ) {
 
   process = NULL  #  silence some check warnings
   bd_base_dir = Sys.getenv("Biodiverse_basepath")
@@ -43,13 +56,15 @@ start_server = function(port=0, use_exe=FALSE, perl_path="") {
   #  currently we need an env var to locate everything...
   #  maybe this: https://stackoverflow.com/questions/42492572/how-to-find-location-of-package
   if (use_exe) {
-    #  non-windows won't have exe extension
-    server_path = file.path(bd_base_dir, 'inst', 'perl', "BiodiverseR")
-    if (!file.exists(server_path)) {  #  installed?
-      server_path = file.path(bd_base_dir, 'perl', "BiodiverseR")
+    if (running_on_windows) {
+      server_path = ensure_biodiverser_executable()
     }
-    if (Sys.info()[['sysname']] == "Windows") {
-      server_path = sprintf("%s.exe", server_path)
+    else {
+      #  non-windows won't have exe extension
+      server_path = file.path(bd_base_dir, 'inst', 'perl', "BiodiverseR")
+      if (!file.exists(server_path)) {  #  installed?
+        server_path = file.path(bd_base_dir, 'perl', "BiodiverseR")
+      }
     }
   } else {
     server_path = file.path(bd_base_dir, 'inst', 'perl', 'script', 'BiodiverseR')
@@ -82,18 +97,23 @@ start_server = function(port=0, use_exe=FALSE, perl_path="") {
       #  need explicit perl call on windows
       # https://processx.r-lib.org/reference/process.html
       cmd = ""
-      #message (sprintf ("Command: %s daemon -l %s", server_path, server_url))
       #  no perl pfx on unix, let the shebang line do its work
       #  need to also send stdout and stderr to a log file
       if (running_on_windows) {
         message ("WE ARE RUNNING ON WINDOWS")
-        args = c(server_path, "daemon", "-l", server_url)
-        #  version should not be hard coded in the path
-        cmd = ifelse(
-          perl_path == "",
-          fs::path (Sys.getenv("APPDATA"), "BiodiverseR/sp5380/perl/bin/perl"),
-          perl_path
-        )
+        if (use_exe) {
+          cmd = server_path
+          args = c("daemon", "-l", server_url)
+        }
+        else {
+          args = c(server_path, "daemon", "-l", server_url)
+          #  version should not be hard coded in the path
+          cmd = ifelse(
+            perl_path == "",
+            fs::path (Sys.getenv("APPDATA"), "BiodiverseR/sp5380/perl/bin/perl"),
+            perl_path
+          )
+        }
       }
       else {
         args = c(server_path, "daemon", "-l", server_url)
@@ -116,7 +136,7 @@ start_server = function(port=0, use_exe=FALSE, perl_path="") {
       while (tries < 15 && !any(grepl(regex, txt, perl=TRUE))) {
         txt = server_object$read_error_lines()
         poll = server_object$poll_io(poll_timer)
-        if (length(txt) == 0 || is.na(txt) || is.null(txt)) {
+        if (length(txt) == 0 || anyNA(txt) || is.null(txt)) {
           message ("Waiting for server to start")
         }
         else {
@@ -146,40 +166,11 @@ start_server = function(port=0, use_exe=FALSE, perl_path="") {
 
   # Grabs the api key from the mojolicious server
   target_url <- paste0(config$server_url, "/api_key")
-  req <- httr2::request(target_url)
+  req <- httr2::request(target_url) |>
+    httr2::req_timeout(30)
   response <- httr2::req_perform(req)
   api_key_received <- httr2::resp_body_json(response)
   config <- c(config, server_api_key=api_key_received)
-
-  #  hopefully redundant now but leaving just in case
-  server_running = 0
-  max_tries = 10
-  trycount = 1
-  while (server_running == 0 && trycount <= max_tries) {
-    #  give the server a chance to get going -
-    #  there must be a better way such as checking the stderr of the process
-    Sys.sleep(1)
-    response = tryCatch({
-        httr::GET(url = server_url)
-        server_running = 1
-      },
-      error = function (c) {
-        # message(
-        #   sprintf(
-        #     "Server still coming up - trying again in 1 second (attempt %d of %d)",
-        #     trycount, max_tries
-        #   )
-        # )
-      },
-      finally = {
-        trycount = trycount + 1
-      }
-    )
-  }
-  if (server_running == 0) {
-    message ("server did not start in time")
-    stop ()
-  }
 
   return(config)
 }
