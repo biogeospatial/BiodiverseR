@@ -50,8 +50,10 @@ Install_perl_deps()                   # Install required Perl dependencies. This
 # Load the BiodiverseR package
 Library(BiodiverseR)
 
-# Create a BiodiverseR object (this automatically loads data and starts a server)
-bd <- with(read.csv(system.file("extdata", "example_test_data.csv", package = "BiodiverseR")), basedata(x, y, groups))
+# Load an example basedata file and start its server
+bd <- BiodiverseR::basedata$new(
+  filename = system.file("extdata", "example.bds", package = "BiodiverseR")
+)
 
 
 # Print the bd object to confirm successful creation
