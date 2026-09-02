@@ -12,13 +12,9 @@ init_strawberry_perl = function () {
 
   # Load release metadata
   json_url <- "https://raw.githubusercontent.com/biogeospatial/biodiverse-sp-portable/main/releases.json"
-  meta <- rjson::fromJSON(file = json_url)
+  release_info <- get_release_metadata(json_url)
 
-  # Get metadata for the current release
-  current_version <- meta$current
-  release_info <- meta$releases[[current_version]]
-
-  # Download URL for the current release
+  current_version <- release_info$version
   sp_url <- release_info$url
 
   # Extract into a version-specific directory

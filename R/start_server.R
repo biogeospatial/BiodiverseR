@@ -1,15 +1,15 @@
 ## Workaround an R CMD check false positive
 dummy_r6 <- function() R6::R6Class
 
-# Published Windows server bundle used by the runtime installer.
-biodiverser_windows_server_version <- "v0.1.0-alpha"
-biodiverser_windows_server_sha256 <- "c4c95ce7f60de5aef0f425579d38b845752db91ff8009c061247a431413ab54a"
-biodiverser_windows_server_url <- paste0(
-  "https://github.com/biogeospatial/",
-  "biodiverseR-perl-engine-builder/releases/download/",
-  biodiverser_windows_server_version,
-  "/BiodiverseR_win_aaf20ba.zip"
+# Published Windows server bundle metadata used by the runtime installer.
+biodiverser_windows_server_json_url <- paste0(
+  "https://raw.githubusercontent.com/biogeospatial/",
+  "biodiverseR-perl-engine-builder/main/releases.json"
 )
+biodiverser_windows_server_release <- get_release_metadata(biodiverser_windows_server_json_url)
+biodiverser_windows_server_version <- biodiverser_windows_server_release$version
+biodiverser_windows_server_sha256 <- biodiverser_windows_server_release$sha256
+biodiverser_windows_server_url <- biodiverser_windows_server_release$url
 
 
 #' Start the Biodiverse server
