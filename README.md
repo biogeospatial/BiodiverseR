@@ -42,7 +42,9 @@ library(BiodiverseR)
 
 # Load an example basedata file and start its server
 bd <- BiodiverseR::basedata$new(
-	filename = system.file("extdata", "example.bds", package = "BiodiverseR")
+  cellsizes = 1,
+  cellorigins = 0,
+  filename = system.file("extdata", "example.bds", package = "BiodiverseR")
 )
 
 
