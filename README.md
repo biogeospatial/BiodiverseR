@@ -51,8 +51,11 @@ bd <- BiodiverseR::basedata$new(
 # Print the bd object to confirm successful creation
 bd
 
-# Optional: remove the object to stop the server
-# rm(bd); gc()
+# Confirm that the server is running
+bd$server_status()
+
+# Optional: stop the server when finished
+bd$stop_server()
 ```
 
 #### MacOS and Linux
