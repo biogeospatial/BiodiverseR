@@ -143,5 +143,5 @@ provide a system Perl installation, but a separate Perlbrew installation is
 recommended. See the [Perlbrew installation guide](https://perlbrew.pl/Installation.html)
 and run `perlbrew install-cpanm` in your terminal before running the R commands.
 
-The dependency installation may take some time and may require development
+**NOTE:** The dependency installation may take some time and may require development
 tools and the [GDAL development package](https://gdal.org/en/latest/download.html#binaries).
