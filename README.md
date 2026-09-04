@@ -20,8 +20,8 @@ instructions](#End-User-installation) below. If you want to develop
 BiodiverseR, follow the [developer installation
 instructions](#Developer_installation) below.
 
-**NOTE:** You will need a working installation of R and Git. Follow the
-R installation instructions at [The R
+**NOTE:** You will need a working installation of R. Follow the R installation
+instructions at [The R
 Project](https://www.r-project.org/).
 
 ### End User installation
@@ -62,6 +62,10 @@ bd$stop_server()
 Below are instructions for installing BiodiverseR on Windows or
 unix-derived systems like MacOS and Linux if you want to develop
 BiodiverseR.
+
+**NOTE:** You will need working installations of R and Git. Follow the R installation
+instructions at [The R
+Project](https://www.r-project.org/).
 
 #### Windows
 
