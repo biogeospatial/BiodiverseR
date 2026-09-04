@@ -64,7 +64,48 @@ bd$server_status()
 bd$stop_server()
 ```
 
-#### MacOS and Linux
+#### macOS and Linux
+
+The simpler bundled installation is not yet available for macOS and Linux.
+
+Most Unix-like systems, including Linux and macOS, provide a system Perl
+installation. We recommend using a separate Perl installation managed by
+[Perlbrew](https://perlbrew.pl/Installation.html) instead.
+
+After installing Perlbrew, install `cpanm` by running this command in your
+terminal:
+
+```sh
+perlbrew install-cpanm
+```
+
+Git must also be installed because the Biodiverse engine and its Perl
+dependencies are currently downloaded from GitHub.
+
+In R, run:
+
+``` r
+install.packages("pak")
+pak::pak("biogeospatial/BiodiverseR")
+
+library(BiodiverseR)
+
+init_perlbrewr()
+install_perl_deps()
+
+bd <- BiodiverseR::basedata$new(
+  filename = system.file("extdata", "example.bds", package = "BiodiverseR")
+)
+
+bd
+bd$server_status()
+
+# Optional: stop the server
+bd$stop_server()
+```
+
+**NOTE:** The dependency installation may take some time and may require development
+tools and the GDAL development package.
 
 ### Developer installation
 Below are instructions for installing BiodiverseR on Windows or unix-derived 
