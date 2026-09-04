@@ -110,50 +110,46 @@ bd$stop_server()
 tools and the GDAL development package.
 
 ### Developer installation
-Below are instructions for installing BiodiverseR on Windows or unix-derived 
-systems like MacOS and Linux if you want to develop BiodiverseR.
+These instructions are for developing BiodiverseR from a local copy of the
+Git repository. You will need working installations of [R](https://www.r-project.org/)
+and [Git](https://git-scm.com/downloads).
 
-**NOTE:** You will need working installations of R and Git. Follow the R installation
-instructions at [The R Project](https://www.r-project.org/).
+In a terminal (PowerShell on Windows, or Terminal on macOS/Linux), clone the
+repository and change to its top-level directory:
 
-#### Windows
+```sh
+git clone https://github.com/biogeospatial/BiodiverseR.git
+cd BiodiverseR
+```
 
-Install the R code
+Start R from this repository directory, or set the repository as R's working
+directory. In RStudio, you can open `BiodiverseR.Rproj`. The
+`devtools::load_all()` command must be run from the repository directory so
+that it loads the local source code.
 
-
-You can install the R code like so:
+Install the package and load the local source code in R:
 
 ``` r
-# install.packages("devtools")
-library("devtools")
-install.packages("pak")               # Install pak for managing package installs
-pak::pak("biogeospatial/BiodiverseR") # Install BiodiverseR from GitHub
+install.packages(c("pak", "devtools"))
+pak::pak("biogeospatial/BiodiverseR")
+
+devtools::load_all()
 ```
 
-However, it is currently best to work within the git repo given ongoing 
-development updates.  
+Install the Biodiverse engine and its Perl dependencies:
 
-Set your working directory to be the top of the git repo and then run this:
-
-```r
-# install.packages("devtools")
-library("devtools")
-load_all()
-```
-
-These next commands will install the Biodiverse engine and its perl dependencies.
-The first one does nothing on Windows but there is no harm in running it.  
-
-```r
+``` r
 init_perlbrewr()
 install_perl_deps()
 ```
 
-Note that the above will take a while if you do not already have the GDAL 
-development package installed on your system.  This is because it will compile
-its own version if it is unable to find one on the system (but maybe this
-is not such a bad thing as then it will be isolated from system changes). If
-you do want to install a system version then see the 
-[GDAL documentation](https://gdal.org/en/latest/download.html#binaries).  
+On Windows, `init_perlbrewr()` does nothing and `install_perl_deps()` downloads
+the bundled Strawberry Perl runtime automatically.
 
-#### MacOS and Linux
+On macOS and Linux, install Perlbrew and `cpanm` first. Most Unix-like systems
+provide a system Perl installation, but a separate Perlbrew installation is
+recommended. See the [Perlbrew installation guide](https://perlbrew.pl/Installation.html)
+and run `perlbrew install-cpanm` in your terminal before running the R commands.
+
+The dependency installation may take some time and may require development
+tools and the [GDAL development package](https://gdal.org/en/latest/download.html#binaries).
