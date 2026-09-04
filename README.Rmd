@@ -80,7 +80,9 @@ perlbrew install-cpanm
 ```
 
 Git must also be installed because the Biodiverse engine and its Perl
-dependencies are currently downloaded from GitHub.
+dependencies are currently downloaded from GitHub. See the
+[Git installation guide](https://git-scm.com/downloads) for installation
+instructions.
 
 In R, run:
 
