@@ -45,7 +45,6 @@ bd <- BiodiverseR::basedata$new(
   filename = system.file("extdata", "example.bds", package = "BiodiverseR")
 )
 
-
 # Print the bd object to confirm successful creation
 bd
 
