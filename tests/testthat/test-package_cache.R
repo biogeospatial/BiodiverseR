@@ -4,7 +4,7 @@ test_that("basedata uses default cell size and origin", {
   initialize_formals = formals(basedata[["public_methods"]][["initialize"]])
 
   expect_equal(initialize_formals[["cellsizes"]], 1)
-  expect_equal(initialize_formals[["cellorigins"]], 0)
+  expect_null(initialize_formals[["cellorigins"]])
 })
 
 test_that("Test to see if package cache is created after analysis call", {

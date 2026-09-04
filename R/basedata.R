@@ -40,7 +40,7 @@ basedata = R6::R6Class("basedata",
     initialize = function(
         name = paste("BiodiverseR::basedata", date()),
         cellsizes = 1,
-        cellorigins = 0,
+        cellorigins = NULL,
         filename = '',
         port = 0,
         use_exe = Sys.info()[["sysname"]] == "Windows",
@@ -56,7 +56,7 @@ basedata = R6::R6Class("basedata",
         checkmate::assert_vector(cellsizes, any.missing=FALSE, min.len=1)
         checkmate::assert_numeric(cellsizes)
 
-        if (missing(cellorigins)) {
+        if (is.null(cellorigins)) {
           cellorigins = cellsizes * 0
         }
         checkmate::assert_vector(cellorigins, any.missing=FALSE, min.len=1)
