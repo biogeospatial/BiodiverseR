@@ -85,7 +85,7 @@ install_perl_deps <- function(cpanfile = NULL, installdeps = TRUE, bd_git_path =
               "clone",
               "--depth", "1",
               "https://github.com/shawnlaffan/biodiverse.git",
-              bd_git_path
+              shQuote(normalizePath(bd_git_path))
             )
           )
         }
@@ -93,12 +93,13 @@ install_perl_deps <- function(cpanfile = NULL, installdeps = TRUE, bd_git_path =
 
     #  should we always update?
     #  should also check it is a git path
-    message ("Updating internal Biodiverse git repo in ", bd_git_path)
+    message("Updating internal Biodiverse git repo in ", normalizePath(bd_git_path))
+
     system2 (
         "git",
         args = c(
           "-C",
-          bd_git_path,
+          shQuote(normalizePath(bd_git_path)),
           "pull"
         )
     )
