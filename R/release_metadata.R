@@ -15,10 +15,42 @@ get_release_metadata <- function(json_url) {
 
   release_info <- meta$releases[[current_version]]
 
-  list(
-    version = current_version,
-    url = release_info$url,
-    sha256 = release_info$sha256,
-    metadata = meta
+  # Determine current platform.
+  platform <- switch(
+    tolower(Sys.info()[["sysname"]]),
+    windows = "windows",
+    darwin  = "macos",
+    linux   = "linux",
+    "unknown"
+  )
+
+  # New multi-platform manifest format.
+  if (!is.null(platform) && !is.null(release_info[[platform]])) {
+    platform_info <- release_info[[platform]]
+
+    return(list(
+      version = current_version,
+      url = platform_info$url,
+      sha256 = platform_info$sha256,
+      metadata = meta
+    ))
+  }
+
+  # Legacy manifest format.
+  if (!is.null(release_info$url)) {
+    return(list(
+      version = current_version,
+      url = release_info$url,
+      sha256 = release_info$sha256,
+      metadata = meta
+    ))
+  }
+
+  stop(
+    sprintf(
+      "No release metadata found for platform '%s' in version '%s'",
+      platform,
+      current_version
+    )
   )
 }
