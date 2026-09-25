@@ -55,29 +55,40 @@ start_server = function(
   #  this runs the perl version - need to find a way to locate it relative to the package
   #  currently we need an env var to locate everything...
   #  maybe this: https://stackoverflow.com/questions/42492572/how-to-find-location-of-package
-  if (use_exe) {
-    if (running_on_windows) {
-      server_path = ensure_biodiverser_executable()
-    }
-    else {
-      #  non-windows won't have exe extension
-      server_path = file.path(bd_base_dir, 'inst', 'perl', "BiodiverseR")
-      if (!file.exists(server_path)) {  #  installed?
-        server_path = file.path(bd_base_dir, 'perl', "BiodiverseR")
-      }
-    }
-  } else {
-    server_path = file.path(bd_base_dir, 'inst', 'perl', 'script', 'BiodiverseR')
-    if (!file.exists(server_path)) {  #  installed? - needs a refactor
-      server_path = file.path(bd_base_dir, 'perl', 'script', "BiodiverseR")
-    }
-    if (running_on_windows && perl_path != "") {
-      if (tools::file_ext(perl_path) == "") {  #  append .exe if needed
-        perl_path = sprintf ("%s.exe", perl_path)
-      }
-      stopifnot("perl_path does not exist"=file.exists(perl_path))
-    }
+  if (use_exe && runtime_available()) {
+
+    server_path = ensure_biodiverser_executable()
+
+   } else {
+
+    server_path = file.path(
+      bd_base_dir,
+      "inst",
+      "perl",
+      "script",
+      "BiodiverseR"
+    )
+
+  if (!file.exists(server_path)) {  # installed?
+    server_path = file.path(
+      bd_base_dir,
+      "perl",
+      "script",
+      "BiodiverseR"
+      )
   }
+
+  if (running_on_windows && perl_path != "") {
+    if (tools::file_ext(perl_path) == "") {
+      perl_path = sprintf("%s.exe", perl_path)
+    }
+
+    stopifnot(
+      "perl_path does not exist" = file.exists(perl_path)
+    )
+  }
+}
+
   message (sprintf("server_path is %s", server_path))
   if (!file.exists(server_path)) {
     message ("Cannot find server_path")
