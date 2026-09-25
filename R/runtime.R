@@ -44,7 +44,7 @@ get_biodiverser_runtime_dir <- function() {
     cache_root,
     "BiodiverseR",
     "runtime",
-    biodiverser_windows_server_version
+    biodiverser_server_version 
   )
 }
 
@@ -100,12 +100,12 @@ ensure_biodiverser_executable <- function() {
 
   # Download outside the cache until the archive has been extracted.
   message("Downloading the BiodiverseR runtime")
-  response <- httr2::request(biodiverser_windows_server_url) |>
+  response <- httr2::request(biodiverser_server_url) |>
     httr2::req_perform(path = archive)
 
   # Verify the archive before extracting or running the executable.
   archive_sha256 <- unname(as.character(gsub(":", "", openssl::sha256(file(archive)))))
-  if (!isTRUE(tolower(archive_sha256) == tolower(biodiverser_windows_server_sha256))) {
+  if (!isTRUE(tolower(archive_sha256) == tolower(biodiverser_server_sha256))) {
     stop("Downloaded BiodiverseR runtime archive failed SHA-256 verification") 
   }
 
