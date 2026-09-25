@@ -9,6 +9,13 @@ get_runtime_platform <- function() {
   )
 }
 
+# Determine if a packaged runtime is available for the current platform.
+runtime_available <- function() {
+  
+  !is.null(biodiverser_server_url) &&
+  nzchar(biodiverser_server_url)
+}
+
 # Return the per-version user cache directory.
 get_biodiverser_runtime_dir <- function() {
 
