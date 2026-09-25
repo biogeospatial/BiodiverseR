@@ -1,16 +1,16 @@
 ## Workaround an R CMD check false positive
 dummy_r6 <- function() R6::R6Class
 
-# Published Windows server bundle metadata used by the runtime installer.
-biodiverser_windows_server_json_url <- paste0(
+# Published runtime bundle metadata used by the runtime installer.
+biodiverser_server_json_url <- paste0(
   "https://raw.githubusercontent.com/biogeospatial/",
   "biodiverseR-perl-engine-builder/main/releases.json"
 )
-biodiverser_windows_server_release <- get_release_metadata(biodiverser_windows_server_json_url)
-biodiverser_windows_server_version <- biodiverser_windows_server_release$version
-biodiverser_windows_server_sha256 <- biodiverser_windows_server_release$sha256
-biodiverser_windows_server_url <- biodiverser_windows_server_release$url
 
+biodiverser_server_release <- get_release_metadata(biodiverser_server_json_url)
+biodiverser_server_version <- biodiverser_server_release$version
+biodiverser_server_sha256 <- biodiverser_server_release$sha256
+biodiverser_server_url <- biodiverser_server_release$url
 
 #' Start the Biodiverse server
 #'
@@ -51,33 +51,44 @@ start_server = function(
 
   path_extras = ""
   running_on_windows = Sys.info()[['sysname']] == "Windows"
+  use_runtime <- use_exe && runtime_available()
 
-  #  this runs the perl version - need to find a way to locate it relative to the package
-  #  currently we need an env var to locate everything...
-  #  maybe this: https://stackoverflow.com/questions/42492572/how-to-find-location-of-package
-  if (use_exe) {
-    if (running_on_windows) {
-      server_path = ensure_biodiverser_executable()
-    }
-    else {
-      #  non-windows won't have exe extension
-      server_path = file.path(bd_base_dir, 'inst', 'perl', "BiodiverseR")
-      if (!file.exists(server_path)) {  #  installed?
-        server_path = file.path(bd_base_dir, 'perl', "BiodiverseR")
-      }
-    }
+  # Use a packaged runtime when one is available for the current platform.
+  # Otherwise fall back to the bundled Perl script.
+  if (use_runtime) {
+
+    server_path = ensure_biodiverser_executable()
+
   } else {
-    server_path = file.path(bd_base_dir, 'inst', 'perl', 'script', 'BiodiverseR')
-    if (!file.exists(server_path)) {  #  installed? - needs a refactor
-      server_path = file.path(bd_base_dir, 'perl', 'script', "BiodiverseR")
+
+    server_path = file.path(
+      bd_base_dir,
+      "inst",
+      "perl",
+      "script",
+      "BiodiverseR"
+    )
+
+    if (!file.exists(server_path)) {  # installed?
+      server_path = file.path(
+        bd_base_dir,
+        "perl",
+        "script",
+        "BiodiverseR"
+      )
     }
+
     if (running_on_windows && perl_path != "") {
-      if (tools::file_ext(perl_path) == "") {  #  append .exe if needed
-        perl_path = sprintf ("%s.exe", perl_path)
+      if (tools::file_ext(perl_path) == "") {
+        perl_path = sprintf("%s.exe", perl_path)
       }
-      stopifnot("perl_path does not exist"=file.exists(perl_path))
+
+      stopifnot(
+        "perl_path does not exist" = file.exists(perl_path)
+      )
     }
   }
+
   message (sprintf("server_path is %s", server_path))
   if (!file.exists(server_path)) {
     message ("Cannot find server_path")
@@ -97,27 +108,33 @@ start_server = function(
       #  need explicit perl call on windows
       # https://processx.r-lib.org/reference/process.html
       cmd = ""
-      #  no perl pfx on unix, let the shebang line do its work
-      #  need to also send stdout and stderr to a log file
-      if (running_on_windows) {
-        message ("WE ARE RUNNING ON WINDOWS")
-        if (use_exe) {
-          cmd = server_path
-          args = c("daemon", "-l", server_url)
-        }
-        else {
-          args = c(server_path, "daemon", "-l", server_url)
-          #  version should not be hard coded in the path
-          cmd = ifelse(
-            perl_path == "",
-            fs::path (Sys.getenv("APPDATA"), "BiodiverseR/sp5380/perl/bin/perl"),
-            perl_path
-          )
-        }
-      }
-      else {
+      # Configure the command used to launch either the packaged runtime
+      # or the bundled Perl script implementation.
+      # Send stderr to a pipe for startup monitoring.
+
+      if (use_runtime) {
+
+        cmd = server_path
+        args = c("daemon", "-l", server_url)
+
+      } else if (running_on_windows) {
+
+        args = c(server_path, "daemon", "-l", server_url)
+
+        cmd = ifelse(
+          perl_path == "",
+          fs::path(
+            Sys.getenv("APPDATA"),
+            "BiodiverseR/sp5380/perl/bin/perl"
+          ),
+          perl_path
+        )
+
+      } else {
+
         args = c(server_path, "daemon", "-l", server_url)
         cmd = "perl"
+
       }
       message (sprintf ("Command: %s", paste (c(cmd, unlist(args)), collapse=" ")))
       # message (Sys.getenv("PATH"))

@@ -1,20 +1,77 @@
-# Return the per-version user cache directory.
-get_biodiverser_runtime_dir <- function() {
-  cache_root <- Sys.getenv("LOCALAPPDATA")
-  if (cache_root == "") {
-    cache_root <- Sys.getenv("APPDATA")
-  }
-  if (cache_root == "") {
-    stop("Could not determine a Windows user cache directory")
-  }
-
-  fs::path(cache_root, "BiodiverseR", "runtime", biodiverser_windows_server_version)
+# Return the current runtime platform.
+get_runtime_platform <- function() {
+  switch(
+    Sys.info()[["sysname"]],
+    Windows = "windows",
+    Darwin = "macos",
+    Linux = "linux",
+    stop("Unsupported platform")
+  )
 }
 
-# Download and cache the Windows server executable when needed.
+# Determine if a packaged runtime is available for the current platform.
+runtime_available <- function() {
+  
+  !is.null(biodiverser_server_url) &&
+  nzchar(biodiverser_server_url)
+}
+
+# Return the per-version user cache directory.
+get_biodiverser_runtime_dir <- function() {
+
+  platform <- get_runtime_platform()
+
+  cache_root <- switch(
+    platform,
+
+    windows = {
+      root <- Sys.getenv("LOCALAPPDATA")
+      if (root == "") {
+        root <- Sys.getenv("APPDATA")
+      }
+      if (root == "") {
+        stop("Could not determine a Windows user cache directory")
+      }
+      root
+    },
+
+    macos = {
+      path.expand("~/Library/Application Support")
+    },
+
+    linux = {
+      Sys.getenv(
+        "XDG_CACHE_HOME",
+        unset = path.expand("~/.cache")
+      )
+    }
+  )
+
+  fs::path(
+    cache_root,
+    "BiodiverseR",
+    "runtime",
+    biodiverser_server_version 
+  )
+}
+
+# Return the platform-specific runtime executable name.
+get_biodiverser_executable_name <- function() {
+
+  if (get_runtime_platform() == "windows") {
+    return("BiodiverseR.exe")
+  }
+
+  return("BiodiverseR")
+}
+
+# Download and cache the BiodiverseR runtime when needed.
 ensure_biodiverser_executable <- function() {
   runtime_dir <- get_biodiverser_runtime_dir()
-  executable <- fs::path(runtime_dir, "BiodiverseR.exe")
+  executable <- fs::path(
+    runtime_dir,
+    get_biodiverser_executable_name()
+  )
 
   # Reuse the runtime if this version is already cached.
   if (fs::file_exists(executable)) {
@@ -49,27 +106,36 @@ ensure_biodiverser_executable <- function() {
   on.exit(unlink(archive), add = TRUE)
 
   # Download outside the cache until the archive has been extracted.
-  message("Downloading the BiodiverseR Windows server")
-  response <- httr2::request(biodiverser_windows_server_url) |>
+  message("Downloading the BiodiverseR runtime")
+  response <- httr2::request(biodiverser_server_url) |>
     httr2::req_perform(path = archive)
 
   # Verify the archive before extracting or running the executable.
   archive_sha256 <- unname(as.character(gsub(":", "", openssl::sha256(file(archive)))))
-  if (!isTRUE(tolower(archive_sha256) == tolower(biodiverser_windows_server_sha256))) {
-    stop("Downloaded BiodiverseR server archive failed SHA-256 verification")
+  if (!isTRUE(tolower(archive_sha256) == tolower(biodiverser_server_sha256))) {
+    stop("Downloaded BiodiverseR runtime archive failed SHA-256 verification") 
   }
+
 
   # Locate the executable in the extracted archive.
   utils::unzip(archive, exdir = runtime_dir)
+
+  executable_name <- get_biodiverser_executable_name()
+
   matches <- fs::dir_ls(
     runtime_dir,
-    regexp = "BiodiverseR\\.exe$",
+    regexp = paste0(executable_name, "$"),
     recurse = TRUE,
     type = "file"
   )
 
   if (length(matches) != 1) {
-    stop("Downloaded archive does not contain exactly one BiodiverseR.exe")
+    stop(
+      sprintf(
+        "Downloaded archive does not contain exactly one %s",
+        executable_name
+      )
+    )
   }
 
   # Keep the executable at the stable path returned to the caller.
