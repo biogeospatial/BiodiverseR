@@ -170,5 +170,13 @@ ensure_biodiverser_executable <- function() {
     fs::file_move(matches[[1]], executable)
   }
 
+  Sys.chmod(executable, mode = "0755")
+
+  message("Executable permissions:")
+  system2(
+    "ls",
+    c("-l", executable)
+  )
+
   executable
 }
