@@ -129,6 +129,21 @@ ensure_biodiverser_executable <- function() {
     type = "file"
   )
 
+  message("Executable name: ", executable_name)
+  message("Runtime dir: ", runtime_dir)
+
+  message("Files extracted:")
+  print(
+    fs::dir_ls(
+      runtime_dir,
+      recurse = TRUE,
+      all = TRUE
+    )
+  )
+
+  message("Matching executables:")
+  print(matches)
+
   if (length(matches) != 1) {
     stop(
       sprintf(
