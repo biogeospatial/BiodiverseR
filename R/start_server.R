@@ -136,19 +136,8 @@ start_server = function(
         cmd = "perl"
 
       }
-      message("perl_path = ", perl_path)
-      message("PATH = ", Sys.getenv("PATH"))
-      message("Runtime available = ", perlbrewr::runtime_available())
-      message("Runtime directory = ", perlbrewr::runtime_dir())
       message (sprintf ("Command: %s", paste (c(cmd, unlist(args)), collapse=" ")))
       # message (Sys.getenv("PATH"))
-
-      if (!use_runtime) {
-        system2(
-          "perl",
-          c("-MMojo::File", "-e", "print 'Mojo OK\n'")
-       )
-      }
 
       server_object = processx::process$new(
         cmd, args,
