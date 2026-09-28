@@ -15,7 +15,6 @@ get_release_metadata <- function(json_url) {
 
   release_info <- meta$releases[[current_version]]
 
-  # Determine current platform.
   platform <- switch(
     tolower(Sys.info()[["sysname"]]),
     windows = "windows",
