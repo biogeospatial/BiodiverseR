@@ -107,12 +107,8 @@ ensure_biodiverser_executable <- function() {
 
   # Download outside the cache until the archive has been extracted.
   message("Downloading the BiodiverseR runtime")
-  message("Runtime URL: ", biodiverser_server_url)
   response <- httr2::request(biodiverser_server_url) |>
     httr2::req_perform(path = archive)
-
-  message("Archive: ", archive)
-  message("Archive size: ", file.info(archive)$size)
 
   # Verify the archive before extracting or running the executable.
   archive_sha256 <- unname(as.character(gsub(":", "", openssl::sha256(file(archive)))))
@@ -124,14 +120,6 @@ ensure_biodiverser_executable <- function() {
   # Locate the executable in the extracted archive.
   utils::unzip(archive, exdir = runtime_dir)
 
-  message("Zip contents:")
-  print(
-    utils::unzip(
-      archive,
-      list = TRUE
-    )
-  )
-
   executable_name <- get_biodiverser_executable_name()
 
   matches <- fs::dir_ls(
@@ -140,21 +128,6 @@ ensure_biodiverser_executable <- function() {
     recurse = TRUE,
     type = "file"
   )
-
-  message("Executable name: ", executable_name)
-  message("Runtime dir: ", runtime_dir)
-
-  message("Files extracted:")
-  print(
-    fs::dir_ls(
-      runtime_dir,
-      recurse = TRUE,
-      all = TRUE
-    )
-  )
-
-  message("Matching executables:")
-  print(matches)
 
   if (length(matches) != 1) {
     stop(
@@ -171,12 +144,6 @@ ensure_biodiverser_executable <- function() {
   }
 
   Sys.chmod(executable, mode = "0755")
-
-  message("Executable permissions:")
-  system2(
-    "ls",
-    c("-l", executable)
-  )
 
   executable
 }
