@@ -153,3 +153,32 @@ and run `perlbrew install-cpanm` in your terminal before running the R commands.
 
 **NOTE:** The dependency installation may take some time and may require development
 tools and the [GDAL development package](https://gdal.org/en/latest/download.html#binaries).
+
+### Testing runtime builds
+
+By default, BiodiverseR downloads runtime metadata from the published
+`releases.json` file in the biodiverseR-perl-engine-builder repository.
+
+The runtime is the packaged Biodiverse server executable used by
+BiodiverseR to perform analyses.
+
+For development and testing, the metadata URL can be overridden using the
+`BIODIVERSER_RELEASES_JSON` environment variable.
+
+For example, to test a runtime from a development branch:
+
+```r
+Sys.setenv(
+  BIODIVERSER_RELEASES_JSON =
+    "https://raw.githubusercontent.com/biogeospatial/biodiverseR-perl-engine-builder/DEVELOPMENT_BRANCH
+/releases.json"
+```
+
+To revert to the default behaviour:
+
+```r
+Sys.unsetenv("BIODIVERSER_RELEASES_JSON")
+```
+
+The override is intended for development and testing and should not normally
+be needed by end users.
