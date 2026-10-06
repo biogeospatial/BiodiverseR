@@ -1,10 +1,15 @@
 ## Workaround an R CMD check false positive
 dummy_r6 <- function() R6::R6Class
 
-# Published runtime bundle metadata used by the runtime installer.
-biodiverser_server_json_url <- paste0(
-  "https://raw.githubusercontent.com/biogeospatial/",
-  "biodiverseR-perl-engine-builder/main/releases.json"
+# Runtime bundle metadata used by the runtime installer.
+# Defaults to the published release metadata but can be overridden
+# using BIODIVERSER_RELEASES_JSON for development and testing.
+biodiverser_server_json_url <- Sys.getenv(
+  "BIODIVERSER_RELEASES_JSON",
+  unset = paste0(
+    "https://raw.githubusercontent.com/biogeospatial/",
+    "biodiverseR-perl-engine-builder/main/releases.json"
+  )
 )
 
 biodiverser_server_release <- get_release_metadata(biodiverser_server_json_url)
