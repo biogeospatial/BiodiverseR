@@ -12,6 +12,8 @@ biodiverser_server_json_url <- Sys.getenv(
   )
 )
 
+message("Using runtime metadata URL: ", biodiverser_server_json_url)
+
 biodiverser_server_release <- get_release_metadata(biodiverser_server_json_url)
 biodiverser_server_version <- biodiverser_server_release$version
 biodiverser_server_sha256 <- biodiverser_server_release$sha256
