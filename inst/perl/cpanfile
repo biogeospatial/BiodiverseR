@@ -3,3 +3,5 @@ requires 'Ref::Util'     => '0';
 requires 'Path::Tiny'    => '0';
 requires 'Data::Printer' => '0';
 requires 'Test::TempDir::Tiny' => '0';
+requires 'Log::Any' => 0;
+requires 'Log::Any::Adapter::MojoLog' => 0;
