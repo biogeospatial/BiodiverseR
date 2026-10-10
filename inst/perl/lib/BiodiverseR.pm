@@ -1,6 +1,8 @@
 package BiodiverseR;
 use Mojo::Base 'Mojolicious', -signatures;
 
+use Log::Any::Adapter;
+
 #  temporary - we need Biodiverse to be installed or in PERL5LIB
 #use Mojo::File qw(curfile);
 #use lib curfile->dirname->dirname->dirname->dirname->child('biodiverse/lib')->to_string;
@@ -16,6 +18,8 @@ use BiodiverseR::BaseData;
 use Biodiverse::BaseData;
 use Biodiverse::ReadNexus;
 use Biodiverse::Spatial;
+#  does not exist before BD 6.99
+my $have_bd_logger = eval "require Biodiverse::Logger";
 
 #  should use Mojo::File
 use Path::Tiny qw /path/;
@@ -44,7 +48,7 @@ while (-e $logname) {
     $logname .= 'x.txt';
 }
 say STDERR "log file is $logname";
-my $log = Mojo::Log->new(path => $logname, level => 'trace');
+our $log = Mojo::Log->new(path => $logname, level => 'trace');
 
 #use JSON::Validator 5.08 ();
 
@@ -59,6 +63,10 @@ my $log = Mojo::Log->new(path => $logname, level => 'trace');
 sub startup ($self) {
 
   $log->debug("Called startup");
+
+  $self->log($log);
+  Biodiverse::Logger->set_logger($log)
+    if $have_bd_logger;
 
   # Removing old log files
   my @all_log_files = glob($logdir . "/*.txt");
