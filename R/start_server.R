@@ -149,7 +149,8 @@ start_server = function(
       txt = server_object$read_error_lines()
       message("TXT: ", txt)
       tries = 1
-      regex = r"(Listening at "http://127\.0\.0\.1:(\d+))"
+      #regex = r"(Listening at "http://127\.0\.0\.1:(\d+))"
+      regex = r"(BiodiverseR server listening for commands)"
       while (tries < 15 && !any(grepl(regex, txt, perl=TRUE))) {
         txt = server_object$read_error_lines()
         poll = server_object$poll_io(poll_timer)
