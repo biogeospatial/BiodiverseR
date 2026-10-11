@@ -385,6 +385,9 @@ sub startup ($self) {
         return success_as_json($c, $result);
     }
 
+    #  send to STDERR and not the log - we look for this text in the calling code
+    say STDERR "BiodiverseR server listening for commands";
+
 }
 
 
