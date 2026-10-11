@@ -34,12 +34,10 @@ Imports:
     tools,
     utils,
     R6,
-    checkmate,
-    perlbrewr,
+    checkmate
 Suggests: 
     testthat (>= 3.0.0),
     ape,
     stringi
-Remotes: github::kiwiroy/perlbrewr
 License: GPL (>= 3)
 Config/testthat/edition: 3
