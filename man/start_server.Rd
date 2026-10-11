@@ -4,7 +4,11 @@
 \alias{start_server}
 \title{Start the Biodiverse server}
 \usage{
-start_server(port = 0, use_exe = FALSE, perl_path = "")
+start_server(
+  port = 0,
+  use_exe = Sys.info()[["sysname"]] == "Windows",
+  perl_path = ""
+)
 }
 \arguments{
 \item{port}{integer}
