@@ -34,10 +34,9 @@ Imports:
     tools,
     utils,
     R6,
-    checkmate
+    checkmate,
+    ape
 Suggests: 
-    testthat (>= 3.0.0),
-    ape,
-    stringi
+    testthat (>= 3.0.0)
 License: GPL (>= 3)
 Config/testthat/edition: 3
