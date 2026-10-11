@@ -33,8 +33,6 @@ run_cluster_analysis(
 \item{name}{character}
 
 \item{tree}{class phylo}
-
-\item{cluster_tie_breakers}{}
 }
 \value{
 The processed results of the cluster analysis

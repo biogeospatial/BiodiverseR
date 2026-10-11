@@ -27,8 +27,6 @@ run_randomisation_analysis(
 \item{spatial_conditions}{character}
 
 \item{def_query}{character}
-
-\item{...}{}
 }
 \value{
 Returns the results from calling the server
@@ -41,9 +39,11 @@ using a basedata object
 if(interactive()) {
   bd = basedata$new(cellsizes=c(500,500))
   r_data = list(
+         data = list (
                 '250:250' = list (r1 = 13758, r2 = 13860),
                 '250:750' = list (r1 = 11003, r2 = 11134),
                )
+          )
 
   params = list (bd_params = r_data, raster_params = NULL)
   bd$load_data(params)

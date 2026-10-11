@@ -21,6 +21,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Shawn Laffan \email{shawn.laffan@unsw.edu.au} (\href{https://orcid.org/0000-0002-5996-0570}{ORCID})
   \item Jakub Tomczyk \email{jstomczyk@gmail.com}
 }
 
