@@ -265,7 +265,9 @@ basedata = R6::R6Class("basedata",
     },
     get_label_count = function () {
       self$call_server("bd_get_label_count")
-    },
+    }
+  ),
+  private = list(
     finalize = function () {
       # message("Finalise called for ", self$name)
       self$stop_server()
