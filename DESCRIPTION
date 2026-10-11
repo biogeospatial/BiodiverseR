@@ -1,6 +1,6 @@
 Package: BiodiverseR
 Title: An R interface to the Biodiverse engine for the spatial analysis of diversity
-Version: 0.0.0.9001
+Version: 0.0.0.9002
 Authors@R: c(
     person(given = "Shawn",
            family = "Laffan",
