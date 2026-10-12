@@ -102,6 +102,7 @@ start_server = function(
   server_url = sprintf ("http://%s:%d", host, as.integer(port))
 
   orig_path = Sys.getenv("PATH")
+  api_key_received = "nonsense"
 
   res = tryCatch (
     {
@@ -144,26 +145,17 @@ start_server = function(
         stdout = "",  #  dump log to stdout and stderr for debug
         stderr = "|"
       )
-      poll_timer = 3000
-      poll = server_object$poll_io(poll_timer)
-      txt = server_object$read_error_lines()
-      message("TXT: ", txt)
-      tries = 1
-      #regex = r"(Listening at "http://127\.0\.0\.1:(\d+))"
-      regex = r"(BiodiverseR server listening for commands|Listening at "http://127\.0\.0\.1:(\d+))"
-      while (tries < 15 && !any(grepl(regex, txt, perl=TRUE))) {
-        txt = server_object$read_error_lines()
-        poll = server_object$poll_io(poll_timer)
-        if (length(txt) == 0 || anyNA(txt) || is.null(txt)) {
-          message ("Waiting for server to start")
-        }
-        else {
-          message (txt)
-        }
-        tries = tries + 1
-      }
-      # port = stringr::str_match(txt, regex)[2]
-      # message ("port is: ", port)
+
+      target_url <- paste0(server_url, "/api_key")
+
+      #  Grab the api key from the server. This also tells us it is running.
+      #  The retries are because the prebuilt archive might be unpacking.
+      #  Would be useful to detect this ahead of the call.
+      req <- httr2::request(target_url) |>
+        httr2::req_retry(max_tries=15, max_seconds=30, retry_on_failure=TRUE)
+      response <- httr2::req_perform(req)
+      api_key_received <- httr2::resp_body_json(response)
+
     },
     error=function(err){
       message(paste("Server call resulted in an error:  ", err))
@@ -179,18 +171,9 @@ start_server = function(
     port = port,
     using_exe = use_exe,
     server_object = server_object,
-    server_url = server_url
+    server_url = server_url,
+    server_api_key = api_key_received
   )
-
-  # Grabs the api key from the mojolicious server
-  target_url <- paste0(config$server_url, "/api_key")
-  req <- httr2::request(target_url) |>
-    httr2::req_timeout(30)
-  response <- httr2::req_perform(req)
-  api_key_received <- httr2::resp_body_json(response)
-  config <- c(config, server_api_key=api_key_received)
 
   return(config)
 }
-
-# start_server()
