@@ -1,5 +1,5 @@
-library("fs")
 library("BiodiverseR")
+
 test_that("Analyse singleton handles multiple input files", {
   file_path <- system.file("extdata", package ="BiodiverseR")
 
@@ -76,7 +76,7 @@ test_that("Analyse singleton handles multiple input files", {
 
   nargs = length(args)
   for (n in 2:nargs) {
-    message(n)
+    #message(n)
     for (i in 1:(nargs-n)) {
       #  skip if too long - should perhaps use i+n-1 in target slice
       if (i+n > nargs) {break}
