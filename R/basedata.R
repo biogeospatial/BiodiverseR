@@ -74,6 +74,7 @@ basedata = R6::R6Class("basedata",
         use_exe=use_exe,
         perl_path=perl_path
       )
+
       if (filename == '') {
         p = list (
           name = self$name,
@@ -96,49 +97,22 @@ basedata = R6::R6Class("basedata",
       self$name = val
     },
     stop_server = function () {
-      s = self$server$server_object
-
-      if (is.null(s)) {
-        return()
-      }
-
-      pid = self$server$server_pid
-      parent_pid = as.numeric(s$get_pid())
-
-      tryCatch({
-          # message("Stopping server, pid is ", pid)
-          s$kill_tree()
-          #  when running under PAR the server is a separate process
-          #  kill_tree does not always get it
-          if (pid != -1 && as.numeric(pid) != as.numeric(parent_pid)) {
-            # message ("checking ", pid)
-            library(ps)
-            handle = ps_handle(pid)
-            if (ps_is_running(handle)) {
-              # message ("killing ", pid)
-              ps_kill(handle)
-            }
-          }
-        },
-        error= function (e) {}
-      )
-
       self$server = NULL
       gc()
+      return()
     },
     server_status = function () {
-      s = self$server$server_object
       result = tryCatch ({
-          s$is_alive()
+        self$server$status()
         },
         error = function () {FALSE}
       )
       return (result)
     },
     call_server = function (call_path, params=NULL) {
-      target_url <- paste(self$server$server_url, call_path, sep = "/")
+      server = self$server
+      target_url <- paste(server$server_url, call_path, sep = "/")
 
-#message(target_url)
       #  filter any nulls
       if (!is.null(params)) {
         params[sapply(params, is.null)] <- NULL

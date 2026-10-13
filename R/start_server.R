@@ -1,5 +1,71 @@
-## Workaround an R CMD check false positive
-dummy_r6 <- function() R6::R6Class
+#  internal class - not to be documented
+BiodiverseRserver <- R6::R6Class ("BiodiverseRserver",
+    cloneable = FALSE,
+    public = list(
+      port = NULL,
+      using_exe = NULL,
+      server_object = NULL,
+      server_url = NULL,
+      server_api_key = NULL,
+      server_pid = -1,
+      initialize = function(
+        port = NULL,
+        using_exe = NULL,
+        server_object = NULL,
+        server_url = NULL,
+        server_api_key = NULL,
+        server_pid = -1
+      ) {
+        self$port = port
+        self$using_exe = using_exe
+        self$server_object = server_object
+        self$server_url = server_url
+        self$server_api_key = server_api_key
+        self$server_pid = server_pid
+        return (self)
+      },
+      status = function () {
+        s = self$server_object
+        result = tryCatch ({
+          s$is_alive()
+        },
+        error = function () {FALSE}
+        )
+        return (result)
+      }
+    ),
+    private = list(
+      finalize = function () {
+        s = self$server_object
+
+        if (is.null(s)) {
+          return()
+        }
+
+        self$server_object = NULL
+
+        pid = self$server_pid
+        parent_pid = as.numeric(s$get_pid())
+
+        tryCatch({
+          s$kill_tree()
+          #  when running under PAR the server is a separate process
+          #  kill_tree does not always get it
+          if (pid != -1 && as.numeric(pid) != as.numeric(parent_pid)) {
+            library(ps)
+            handle = ps_handle(pid)
+            if (ps_is_running(handle)) {
+              ps_kill(handle)
+            }
+          }
+        },
+        error= function (e) {}
+        )
+
+        gc()
+      }
+    )
+)
 
 # Published runtime bundle metadata used by the runtime installer.
 biodiverser_server_json_url <- paste0(
@@ -194,7 +260,7 @@ start_server = function(
     Sys.setenv("PATH"=orig_path)
   }
 
-  config = list (
+  server = BiodiverseRserver$new (
     port = port,
     using_exe = use_exe,
     server_object = server_object,
@@ -203,5 +269,5 @@ start_server = function(
     server_pid = pid
   )
 
-  return(config)
+  return(server)
 }
