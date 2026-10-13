@@ -3,10 +3,6 @@ use Mojo::Base 'Mojolicious', -signatures;
 
 use Log::Any::Adapter;
 
-#  temporary - we need Biodiverse to be installed or in PERL5LIB
-#use Mojo::File qw(curfile);
-#use lib curfile->dirname->dirname->dirname->dirname->child('biodiverse/lib')->to_string;
-
 use Ref::Util qw /is_ref is_arrayref is_hashref/;
 use Carp qw /croak/;
 
