@@ -62,41 +62,41 @@ our $log = Mojo::Log->new(path => $logname, level => 'trace');
 # This method will run once at server start
 sub startup ($self) {
 
-  $log->debug("Called startup");
+    $log->debug("Called startup");
 
-  $self->log($log);
-  Biodiverse::Logger->set_logger($log)
-    if $have_bd_logger;
+    $self->log($log);
+    Biodiverse::Logger->set_logger($log)
+      if $have_bd_logger;
 
-  # Removing old log files
-  my @all_log_files = glob($logdir . "/*.txt");
-  foreach my $file (@all_log_files){
-    if (-M $file > 7) {
-     unlink $file;
+    # Removing old log files
+    my @all_log_files = glob($logdir . "/*.txt");
+    foreach my $file (@all_log_files){
+        if (-M $file > 7) {
+            unlink $file;
+        }
     }
-  }
 
-  # Load configuration from config filesecrets
-  #my $config = $self->plugin('NotYAMLConfig');
+    # Load configuration from config filesecrets
+    #my $config = $self->plugin('NotYAMLConfig');
 
-  $self->helper(data => sub {state $data = BiodiverseR::Data->new});
+    $self->helper(data => sub {state $data = BiodiverseR::Data->new});
 
-  my $renderer = Mojolicious::Renderer->new;
-  if ($ENV{PAR_INC}) {
-    push @{$renderer->paths}, path ($ENV{PAR_INC}, 'templates');
-  }
+    my $renderer = Mojolicious::Renderer->new;
+    if ($ENV{PAR_INC}) {
+        push @{$renderer->paths}, path ($ENV{PAR_INC}, 'templates');
+    }
   
-  # Configure the application
+    # Configure the application
   #$self->secrets($config->{secrets});
-  $self->secrets(rand());
+    $self->secrets(rand());
 
-  # Router
-  my $r = $self->routes;
+    # Router
+    my $r = $self->routes;
 
-  #$self->renderer->default_format('json');
+    #$self->renderer->default_format('json');
 
-  # Normal route to controller
-  $r->get('/')->to('Example#welcome');
+    # Normal route to controller
+    $r->get('/')->to('Example#welcome');
 
     my %metadata_route_factory = (
         calculations_metadata             => {
