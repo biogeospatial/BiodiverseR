@@ -89,16 +89,6 @@ sub startup ($self) {
   # Configure the application
   #$self->secrets($config->{secrets});
   $self->secrets(rand());
-  
-  # Creating an api key for the server
-  my @valid_chars = ("A".."Z", "a".."z");
-  my $random_str;
-  $random_str .= $valid_chars[rand @valid_chars] for 1..20;
-  # $log->debug("RANDOM STR");
-  # $log->debug($random_str);
-  state $api_key = sha256_base64($random_str);
-  # $log->debug("API KEY");
-  # $log->debug($api_key);
 
   # Router
   my $r = $self->routes;
@@ -323,6 +313,14 @@ sub startup ($self) {
         return $c->render(json => {error => $e, result => defined $result});
     });
 
+    # Create an api key for the server
+    sub get_api_key {
+        state @valid_chars = ("A" .. "Z", "a" .. "z");
+        state $random_str = join '', map {$valid_chars[rand @valid_chars]} (1 .. 20);
+        state $api_key = sha256_base64($random_str);
+        return $api_key;
+    }
+
     # Sends the api key to the R server
     $r->get ('/api_key' => sub ($c) {
         state $already_checked = 0;
@@ -330,7 +328,7 @@ sub startup ($self) {
             if $already_checked;
         #  could track the count, but we only really need a boolean
         $already_checked = 1;
-        return $c->render(json => $api_key);
+        return $c->render(json => get_api_key());
     });
 
     #  When run under PAR we are not the main process, so killing it does not kill the server.
@@ -365,7 +363,7 @@ sub startup ($self) {
     sub is_valid_api_key ($c, @rest) {
         my $sent_api_key = $c->req->headers->header('api_key') // 1;
 
-        return $sent_api_key eq ($api_key // 2);
+        return $sent_api_key eq (get_api_key() // 2);
     }
 
     sub analysis_call ($c, $method){
