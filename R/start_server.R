@@ -103,6 +103,7 @@ start_server = function(
 
   orig_path = Sys.getenv("PATH")
   api_key_received = "nonsense"
+  pid = -1
 
   res = tryCatch (
     {
@@ -156,6 +157,32 @@ start_server = function(
       response <- httr2::req_perform(req)
       api_key_received <- httr2::resp_body_json(response)
 
+      #  Older server versions don't have the pid method.
+      #  The problem, though, is that it takes ages for the non-response.
+      tryCatch ({
+          # message ("getting server pid")
+          target_url <- paste0(server_url, "/pid")
+          req <- httr2::request(target_url) |>
+            httr2::req_headers(api_key = api_key_received) |>
+            httr2::req_retry(
+              max_tries=2,
+              max_seconds=1,
+              retry_on_failure=FALSE,
+              failure_threshold=1,
+              failure_timeout=1
+            )
+          response <- httr2::req_perform(req)
+          # message ("Done")
+          response <- httr2::resp_body_json(response)
+          if (is.list(response)) {
+            pid = response[['result']]
+          } else {
+            pid = response
+          }
+        },
+        error = function (e) {}
+      )
+
     },
     error=function(err){
       message(paste("Server call resulted in an error:  ", err))
@@ -172,7 +199,8 @@ start_server = function(
     using_exe = use_exe,
     server_object = server_object,
     server_url = server_url,
-    server_api_key = api_key_received
+    server_api_key = api_key_received,
+    server_pid = pid
   )
 
   return(config)

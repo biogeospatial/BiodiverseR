@@ -34,7 +34,8 @@ Imports:
     utils,
     R6,
     checkmate,
-    ape
+    ape,
+    ps
 Suggests: 
     testthat (>= 3.0.0)
 License: GPL (>= 3)

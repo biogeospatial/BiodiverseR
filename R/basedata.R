@@ -97,12 +97,34 @@ basedata = R6::R6Class("basedata",
     },
     stop_server = function () {
       s = self$server$server_object
+
+      if (is.null(s)) {
+        return()
+      }
+
+      pid = self$server$server_pid
+      parent_pid = as.numeric(s$get_pid())
+
       tryCatch({
-          s$kill()
+          # message("Stopping server, pid is ", pid)
+          s$kill_tree()
+          #  when running under PAR the server is a separate process
+          #  kill_tree does not always get it
+          if (pid != -1 && as.numeric(pid) != as.numeric(parent_pid)) {
+            # message ("checking ", pid)
+            library(ps)
+            handle = ps_handle(pid)
+            if (ps_is_running(handle)) {
+              # message ("killing ", pid)
+              ps_kill(handle)
+            }
+          }
         },
         error= function (e) {}
       )
+
       self$server = NULL
+      gc()
     },
     server_status = function () {
       s = self$server$server_object
