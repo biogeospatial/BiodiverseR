@@ -50,15 +50,6 @@ while (-e $logname) {
 say STDERR "log file is $logname";
 our $log = Mojo::Log->new(path => $logname, level => 'trace');
 
-#use JSON::Validator 5.08 ();
-
-#has 'foo';
-
-#has 'biodiverse_object' => sub {
-#  Biodiverse::BaseData->new(NAME => 'some name');
-#};
-
-
 # This method will run once at server start
 sub startup ($self) {
 
@@ -69,11 +60,8 @@ sub startup ($self) {
       if $have_bd_logger;
 
     # Removing old log files
-    my @all_log_files = glob($logdir . "/*.txt");
-    foreach my $file (@all_log_files){
-        if (-M $file > 7) {
-            unlink $file;
-        }
+    foreach my $file (grep {-M $_ > 7} glob ($logdir . "/*.txt")) {
+        unlink $file;
     }
 
     # Load configuration from config filesecrets
