@@ -24,7 +24,6 @@ my $gp_lb = {
   '150:150' => {label1 => 1, label2 => 1},
 };
 my $oneshot_data = {
-  api_key => $api_key,
   bd => {
     params => {name => 'blognorb', cellsizes => [100,100]},
     data   => $gp_lb,
