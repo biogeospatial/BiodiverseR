@@ -13,6 +13,10 @@ $t->get_ok('/' => {"api_key" => $api_key})->status_is(200)->content_like(qr/Mojo
 $t->get_ok('/api_key')->status_is(200)->json_is(undef);
 $t->get_ok('/api_key')->status_is(200)->json_is(undef);
 
+$t->get_ok('/pid' => {"api_key" => $api_key})
+    ->status_is(200)
+    ->json_is ('' => $$, "json results, pid");
+
 #  plenty repetition below - could do with a refactor
 
 my $gp_lb = {

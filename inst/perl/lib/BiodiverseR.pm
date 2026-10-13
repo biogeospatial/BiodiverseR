@@ -333,6 +333,15 @@ sub startup ($self) {
         return $c->render(json => $api_key);
     });
 
+    #  When run under PAR we are not the main process, so killing it does not kill the server.
+    #  This allows a second go by the caller.
+    $r->get ('/pid' => sub ($c) {
+        return $c->render(json => undef)
+            if !is_valid_api_key($c);
+        # return $c->render(json => {error => undef, result => $$});
+        return $c->render(json => $$);
+    });
+
     sub success_as_json ($c, $result) {
         return $c->render(
             json => {
@@ -384,6 +393,11 @@ sub startup ($self) {
 
         return success_as_json($c, $result);
     }
+
+    # $r->any('/*whatever' => {whatever => ''} => sub ($c) {
+    #     my $whatever = $c->param('whatever');
+    #     $c->render(text => "/$whatever did not match.", status => 404);
+    # });
 
     #  send to STDERR and not the log - we look for this text in the calling code
     say STDERR "BiodiverseR server listening for commands";
