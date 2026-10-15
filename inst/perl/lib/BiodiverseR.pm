@@ -3,10 +3,6 @@ use Mojo::Base 'Mojolicious', -signatures;
 
 use Log::Any::Adapter;
 
-#  temporary - we need Biodiverse to be installed or in PERL5LIB
-#use Mojo::File qw(curfile);
-#use lib curfile->dirname->dirname->dirname->dirname->child('biodiverse/lib')->to_string;
-
 use Ref::Util qw /is_ref is_arrayref is_hashref/;
 use Carp qw /croak/;
 
@@ -50,63 +46,41 @@ while (-e $logname) {
 say STDERR "log file is $logname";
 our $log = Mojo::Log->new(path => $logname, level => 'trace');
 
-#use JSON::Validator 5.08 ();
-
-#has 'foo';
-
-#has 'biodiverse_object' => sub {
-#  Biodiverse::BaseData->new(NAME => 'some name');
-#};
-
-
 # This method will run once at server start
 sub startup ($self) {
 
-  $log->debug("Called startup");
+    $log->debug("Called startup");
 
-  $self->log($log);
-  Biodiverse::Logger->set_logger($log)
-    if $have_bd_logger;
+    $self->log($log);
+    Biodiverse::Logger->set_logger($log)
+      if $have_bd_logger;
 
-  # Removing old log files
-  my @all_log_files = glob($logdir . "/*.txt");
-  foreach my $file (@all_log_files){
-    if (-M $file > 7) {
-     unlink $file;
+    # Removing old log files
+    foreach my $file (grep {-M $_ > 7} glob ($logdir . "/*.txt")) {
+        unlink $file;
     }
-  }
 
-  # Load configuration from config filesecrets
-  #my $config = $self->plugin('NotYAMLConfig');
+    # Load configuration from config filesecrets
+    #my $config = $self->plugin('NotYAMLConfig');
 
-  $self->helper(data => sub {state $data = BiodiverseR::Data->new});
+    $self->helper(data => sub {state $data = BiodiverseR::Data->new});
 
-  my $renderer = Mojolicious::Renderer->new;
-  if ($ENV{PAR_INC}) {
-    push @{$renderer->paths}, path ($ENV{PAR_INC}, 'templates');
-  }
+    my $renderer = Mojolicious::Renderer->new;
+    if ($ENV{PAR_INC}) {
+        push @{$renderer->paths}, path ($ENV{PAR_INC}, 'templates');
+    }
   
-  # Configure the application
+    # Configure the application
   #$self->secrets($config->{secrets});
-  $self->secrets(rand());
-  
-  # Creating an api key for the server
-  my @valid_chars = ("A".."Z", "a".."z");
-  my $random_str;
-  $random_str .= $valid_chars[rand @valid_chars] for 1..20;
-  # $log->debug("RANDOM STR");
-  # $log->debug($random_str);
-  state $api_key = sha256_base64($random_str);
-  # $log->debug("API KEY");
-  # $log->debug($api_key);
+    $self->secrets(rand());
 
-  # Router
-  my $r = $self->routes;
+    # Router
+    my $r = $self->routes;
 
-  #$self->renderer->default_format('json');
+    #$self->renderer->default_format('json');
 
-  # Normal route to controller
-  $r->get('/')->to('Example#welcome');
+    # Normal route to controller
+    $r->get('/')->to('Example#welcome');
 
     my %metadata_route_factory = (
         calculations_metadata             => {
@@ -323,6 +297,14 @@ sub startup ($self) {
         return $c->render(json => {error => $e, result => defined $result});
     });
 
+    # Create an api key for the server
+    sub get_api_key {
+        state @valid_chars = ("A" .. "Z", "a" .. "z");
+        state $random_str = join '', map {$valid_chars[rand @valid_chars]} (1 .. 20);
+        state $api_key = sha256_base64($random_str);
+        return $api_key;
+    }
+
     # Sends the api key to the R server
     $r->get ('/api_key' => sub ($c) {
         state $already_checked = 0;
@@ -330,7 +312,7 @@ sub startup ($self) {
             if $already_checked;
         #  could track the count, but we only really need a boolean
         $already_checked = 1;
-        return $c->render(json => $api_key);
+        return $c->render(json => get_api_key());
     });
 
     #  When run under PAR we are not the main process, so killing it does not kill the server.
@@ -365,7 +347,7 @@ sub startup ($self) {
     sub is_valid_api_key ($c, @rest) {
         my $sent_api_key = $c->req->headers->header('api_key') // 1;
 
-        return $sent_api_key eq ($api_key // 2);
+        return $sent_api_key eq (get_api_key() // 2);
     }
 
     sub analysis_call ($c, $method){
