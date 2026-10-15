@@ -100,9 +100,12 @@ biodiverser_server_url <- biodiverser_server_release$url
 
 start_server = function(
     port=0,
-    use_exe=Sys.info()[["sysname"]] == "Windows",
-    perl_path=""
+    use_exe=NULL,
+    perl_path="",  #  path to the perl executable
+    perl5lib=NULL  #  if perl libs are not under the main perl
   ) {
+
+  running_on_windows = Sys.info()[['sysname']] == "Windows"
 
   process = NULL  #  silence some check warnings
   bd_base_dir = Sys.getenv("Biodiverse_basepath")
@@ -114,10 +117,12 @@ start_server = function(
   if (is.null(perl_path) || is.na(perl_path)) {
     perl_path = ""
   }
+  if (is.null(use_exe)) {
+    use_exe = running_on_windows
+  }
 
   path_extras = ""
-  running_on_windows = Sys.info()[['sysname']] == "Windows"
-  use_runtime <- runtime_available()
+  use_runtime <- use_exe && runtime_available()
 
   # Use a packaged runtime when one is available for the current platform.
   # Otherwise fall back to the bundled Perl script.
@@ -185,26 +190,27 @@ start_server = function(
         cmd = server_path
         args = c("daemon", "-l", server_url)
 
-      } else if (running_on_windows) {
-
-        args = c(server_path, "daemon", "-l", server_url)
-
-        cmd = ifelse(
-          perl_path == "",
-          fs::path(
-            Sys.getenv("APPDATA"),
-            "BiodiverseR/sp5380/perl/bin/perl"
-          ),
-          perl_path
-        )
-
       } else {
-
         args = c(server_path, "daemon", "-l", server_url)
-        cmd = "perl"
 
+        if (!is.null(perl5lib)) {
+          args = c(paste0("-I", perl5lib), unlist (args))
+        }
+
+        if (running_on_windows) {
+          cmd = ifelse(
+            perl_path == "",
+            fs::path(
+              Sys.getenv("APPDATA"),
+              "BiodiverseR/sp5380/perl/bin/perl"
+            ),
+            perl_path
+          )
+        } else {
+          cmd = "perl"
+        }
       }
-      message (sprintf ("Command: %s", paste (c(cmd, unlist(args)), collapse=" ")))
+      message (sprintf ("Command: %s", paste (c(cmd, shQuote(unlist(args))), collapse=" ")))
       # message (Sys.getenv("PATH"))
 
       server_object = processx::process$new(
