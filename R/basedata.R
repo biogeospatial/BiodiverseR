@@ -43,8 +43,9 @@ basedata = R6::R6Class("basedata",
         cellorigins = NULL,
         filename = '',
         port = 0,
-        use_exe = Sys.info()[["sysname"]] == "Windows",
-        perl_path = NA,
+        use_exe = NULL,
+        perl_path = NULL,
+        perl5lib = NULL,
         cache_list = list()
       ) {
       self$name = name
@@ -72,7 +73,8 @@ basedata = R6::R6Class("basedata",
       self$server = BiodiverseR::start_server(
         port=port,
         use_exe=use_exe,
-        perl_path=perl_path
+        perl_path=perl_path,
+        perl5lib=perl5lib
       )
 
       if (filename == '') {
