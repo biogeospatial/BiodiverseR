@@ -1,7 +1,8 @@
 library("BiodiverseR")
 
 test_that("Analyse oneshot handles multiple input files", {
-  file_path <- system.file("extdata", package ="BiodiverseR")
+
+
 
   gp_lb <- list(
     '250:250' = list (r1 = 13758, r2 = 13860, r3 = 13727),
@@ -18,7 +19,7 @@ test_that("Analyse oneshot handles multiple input files", {
       list(1, 2), list(4), list(3)
     ),
     shapefile_data = list (
-      files = normalizePath(list.files (path = file_path, pattern = "r[123].shp$",  full.names=TRUE)),
+      files = normalizePath(list.files (path = file_path, pattern = "r[123].sh[pz]$",  full.names=TRUE)),
       list(":shape_x", ":shape_y"), list("label"), list("count")
     ),
     spreadsheet_data = list (

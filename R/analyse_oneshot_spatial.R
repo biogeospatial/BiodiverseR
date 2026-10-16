@@ -83,7 +83,7 @@ convert_to_params <- function(list) {
   if (!is.null(list)) {
 
     #Check if the first file passed in is a shapefile or spreadsheet
-    file_ends <- list(".shp", ".xlsx", ".xls", ".ods", ".sxc")
+    file_ends <- list(".sh[pz]", ".xlsx", ".xls", ".ods", ".sxc")
     flag <- FALSE
     for (i in seq(1, length(file_ends))) {
       if (grepl(file_ends[i], list[[1]][[1]])) {
