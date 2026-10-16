@@ -101,7 +101,7 @@ biodiverser_server_url <- biodiverser_server_release$url
 start_server = function(
     port=0,
     use_exe=NULL,
-    perl_path="",  #  path to the perl executable
+    perl_path=NULL,  #  path to the perl executable
     perl5lib=NULL  #  if perl libs are not under the main perl
   ) {
 
@@ -115,10 +115,22 @@ start_server = function(
     message ("Env var Biodiverse_basepath not set, assuming ", bd_base_dir)
   }
   if (is.null(perl_path) || is.na(perl_path)) {
+    perl_path = BiodiverseR_config()$package$perl_path
+  }
+  if (is.null(perl_path)) {
     perl_path = ""
+  }
+
+  if (is.null(use_exe)) {
+    use_exe = BiodiverseR_config()$package$use_exe
   }
   if (is.null(use_exe)) {
     use_exe = running_on_windows
+  }
+
+  if (is.null(perl5lib)) {
+    perl5lib = BiodiverseR_config()$package$perl5lib
+    # message ("set perl5lib to ", perl5lib)
   }
 
   path_extras = ""

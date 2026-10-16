@@ -67,3 +67,7 @@ BiodiverseR_log*.txt
 #  R build files
 _build
 .build
+
+#  perl profiling
+/inst/perl/nytprof
+**/nytprof.out
