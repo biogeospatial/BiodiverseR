@@ -121,21 +121,7 @@ basedata = R6::R6Class("basedata",
       }
       params_as_json <- rjson::toJSON(params)
 
-# message ("about to run call, params are:")
-# message (params_as_json)
-# message ("\n")
-      # response <- httr::POST(
-      #   url = target_url,
-      #   body = params_as_json,
-      #   encode = "json",
-      # )
-      # # httr::stop_for_status(response)
-      # call_results <- httr::content(response, "parsed")
-
       req <- httr2::request(target_url)
-      # if (!is.null(params)) {
-       #   req <- httr2::req_body_raw(req, params_as_json)
-      # }
       req <- httr2::req_body_raw(req, params_as_json)
       req <- httr2::req_headers(req, api_key = self$server$server_api_key)
       response <- httr2::req_perform(req)
