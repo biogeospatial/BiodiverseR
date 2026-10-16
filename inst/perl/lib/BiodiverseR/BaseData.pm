@@ -94,7 +94,7 @@ sub get_output_count ($self) {
 }
 
 sub _as_arrray_ref {
-    return is_ref ($_[0]) ? $_[0] : [$_[0]];
+    return is_arrayref ($_[0]) ? $_[0] : [$_[0]];
 }
 
 sub load_data ($class, $args) {
@@ -168,6 +168,10 @@ sub load_data ($class, $args) {
             $files = [$files];
         }
         # p $bd_params;
+        foreach my $fd_name (qw /group_field_names label_field_names/) {
+            croak "argument $fd_name not defined"
+                if !defined $params->{$fd_name};
+        }
         my %in_options_hash
             = map {$_ => _as_arrray_ref($params->{$_})}
             (qw /group_field_names label_field_names sample_count_col_names/);

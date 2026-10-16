@@ -59,7 +59,7 @@ my %file_type_args = (
         files => [ "$data_dir/r1.tif", "$data_dir/r2.tif", "$data_dir/r3.tif" ]
     },
     shapefile_params => {
-        files => [ "$data_dir/r1.shp", "$data_dir/r2.shp", "$data_dir/r3.shp" ],
+        files => [ "$data_dir/r1.shz", "$data_dir/r2.shz", "$data_dir/r3.shz" ],
         group_field_names      => [ qw/:shape_x :shape_y/ ],
         label_field_names      => [ 'label' ],
         sample_count_col_names => [ 'count' ]
