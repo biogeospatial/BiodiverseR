@@ -1,8 +1,7 @@
 library("BiodiverseR")
 
 test_that("Analyse oneshot handles multiple input files", {
-
-
+  file_path <- system.file("extdata", package ="BiodiverseR")
 
   gp_lb <- list(
     '250:250' = list (r1 = 13758, r2 = 13860, r3 = 13727),
