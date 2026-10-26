@@ -22,7 +22,7 @@
 #'
 #' # Optionally supply arguments via a named list
 #' list(perl_path = "some/path/bin/perl") |>
-#'   galah_config()
+#'   BiodiverseR_config()
 #' }
 #' @export
 BiodiverseR_config <- function(...) {
@@ -122,13 +122,42 @@ validate_config <- function(name,
                             value,
                             call = rlang::caller_env()) {
   result <- switch(name,
-         "use_exe"    = enforce_logical_or_null(value, call = call),
-         "perl_path"  = enforce_exe_exists(value),
-         "perl5lib"   = enforce_path_exists (value),
+         "use_exe"    = enforce_logical_na_or_null(value, call = call),
+         "perl_path"  = bd_config_process_perl_path (value, call = call),
+         "perl5lib"   = bd_config_process_perl5lib (value, call = call),
          "verbose"    = enforce_logical(value, call = call),
          enforce_invalid_name(name,
                               call = call))
   result
+}
+
+is_null_or_na = function (x) {
+  is.null(x) || is.na(x)
+}
+
+bd_config_process_perl_path = function (value, call = rlang::caller_env()) {
+  if (is_null_or_na(value)) {
+    value = Sys.getenv("BiodiverseR_PERL_PATH")
+  }
+  if (!is_null_or_na(value) || value == "") {
+      value = enforce_exe_exists(v)
+  }
+  return (value)
+}
+
+bd_config_process_perl5lib = function (value, call = rlang::caller_env()) {
+  if (is_null_or_na(value)) {
+    value = Sys.getenv("BiodiverseR_PERL5LIB")
+  }
+  if (!is_null_or_na(value)) {
+    v = unlist(strsplit(value, .Platform$path.sep))
+    v = v[v != ""]
+    if (length(v) == 0) {
+      return (NULL)
+    }
+    value = enforce_path_exists(v)
+  }
+  return (value)
 }
 
 #' Ensure some arguments are logical
@@ -148,23 +177,28 @@ enforce_logical <- function(value,
 #' Ensure some arguments are logical or NULL
 #' @noRd
 #' @keywords Internal
-enforce_logical_or_null <- function(value,
+enforce_logical_na_or_null <- function(value,
                             call = rlang::caller_env()){
-  if (!(is.null(value) || is.logical(value))) {
-    cli::cli_abort("Supplied value must be TRUE, FALSE or NULL.",
-                   call = call)
-  }else{
-    value
+  if (is.na(value)) {
+    return (NULL)
   }
+  if (!is_null_or_na(value)) {
+    cli::cli_abort("Supplied value must be TRUE, FALSE, NA or NULL.",
+                   call = call)
+  }
+
   return (value)
 }
 
-#' Ensure a file exists
+#' Ensure an executable file exists
 #' @noRd
 #' @keywords Internal
 enforce_exe_exists <- function(value,
                            call = rlang::caller_env()){
   on_windows = Sys.info()[['sysname']] == "Windows"
+  if (is_null_or_na(value) || value == "") {
+    return (NULL)
+  }
   if (on_windows && tools::file_ext(value) == "") {
     value = paste0(value, ".exe")
   }
@@ -172,9 +206,8 @@ enforce_exe_exists <- function(value,
     c("File does not exist.",
       i = "Does the directory entered exist?") |>
     cli::cli_abort(call = call)
-  }else{
-    value
   }
+  return (value)
 }
 
 #' Ensure a dir exists
@@ -188,7 +221,7 @@ enforce_path_exists <- function(value,
       c("Cannot find dir",
         i = sprintf("Directory %s does not exist.", v)) |>
         cli::cli_abort(call = call)
-    }else{
+    } else {
       res = append(res, v)
     }
   }
